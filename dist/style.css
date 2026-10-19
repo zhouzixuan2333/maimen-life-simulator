@@ -47,3 +47,25 @@
   .end-actions{grid-template-columns:1fr 1fr}.end-actions .primary{grid-column:1/-1;justify-content:center}
   .ending-copy h1{font-size:29px}.future-story{font-size:14px}
 }
+
+/* Longer runs, visible prerequisites and inventory consequences. */
+.resume-button{width:100%;margin-bottom:13px;text-align:center;background:#eee6d4}
+.progress{display:grid;grid-template-columns:repeat(9,1fr);gap:5px}
+.progress>span{flex-direction:column;gap:7px;font-size:9px;text-align:center}
+.progress i{flex-shrink:0}
+.random-banner{border:1px dashed #aa7e25;background:#f8e9bc;color:#74531d;padding:12px 15px;margin-bottom:20px;font-size:11px;border-radius:6px}
+.option:disabled{opacity:.63;background:#f1ece2;border-style:dashed;transform:none}
+.option:disabled:hover{box-shadow:none;border-color:var(--line)}
+.option em.lock-reason{color:#9e4b38;line-height:1.6}
+.item-changes{display:flex;flex-direction:column;gap:8px;margin-top:18px;background:#edf0dc;padding:14px;border-radius:6px;font-size:12px;color:#546535}
+.item-changes .spent{color:#a14c38}
+.quest-status{display:flex;flex-direction:column;gap:8px;font-size:10px;color:#9b8975;margin-top:20px}
+.quest-status .done{color:#677e3c}
+.consequences{border-left:3px solid #ce9e45;padding:3px 0 3px 15px;margin-top:20px}
+.consequences small{color:var(--red);font-size:11px}.consequences p{font-size:12px;line-height:1.8;margin-top:10px;color:var(--muted)}
+.journey-log summary{font-size:11px;cursor:pointer;color:var(--red);padding:14px 0;border-block:1px dashed var(--line);margin:20px 0}
+@media(max-width:650px){.progress{grid-template-columns:repeat(9,1fr);gap:2px}.progress>span{font-size:8px}.progress>span>span{writing-mode:vertical-rl;letter-spacing:2px}.quest-status{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;gap:7px 14px;margin-top:15px}.story-content{padding-top:22px}.random-banner{font-size:10px}}
+
+@media(max-width:650px){.story-panel{scroll-margin-top:18px}.inventory{flex-direction:row;flex-wrap:wrap;gap:6px 12px}.inventory small{width:100%}.worldline{margin-top:12px;padding:10px 0}.quest-status{margin-top:12px}}
+
+@media(max-width:650px){.status-panel>.save-status{display:block;grid-column:1/-1;margin:10px 0 0}}
