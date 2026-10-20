@@ -179,3 +179,71 @@ summary:focus-visible{outline:3px solid #407d9b;outline-offset:4px}
   .feedback-card{padding:22px}
   .continue{margin-top:24px}
 }
+
+/* Quick play: take a number, meet your fate, act in one tap. */
+.quick-home{align-items:start;gap:65px}
+.quick-home .hero-copy h1{font-size:clamp(36px,4.2vw,52px)}
+.quick-home .start-button{margin-bottom:12px}
+.quick-home .resume-button{margin:18px 0 0}
+.manual-start{margin:24px 0}
+.manual-start>summary{font-size:13px;color:var(--red);padding:10px 0}
+.manual-start .role-list{margin:14px 0}
+.manual-start>.secondary{width:100%;margin-bottom:10px}
+.fate-preview .ticket-body{padding:28px 34px}
+.boss-cat{font-size:88px;position:relative;width:max-content;margin:0 auto 20px}
+.boss-cat>span{position:absolute;bottom:0;right:-32px;transform:rotate(-9deg);font-size:13px;background:var(--yellow);border:1px solid var(--dark);border-radius:4px;padding:5px 10px;font-weight:700}
+.preview-setup{color:#796452;font-size:15px;line-height:1.8}
+.fate-preview h2{font-size:32px;line-height:1.45;margin:12px 0 20px}
+.fate-preview h2>span{color:var(--red)}
+.cat-chat{background:#f3eadb;border-radius:8px;padding:16px;margin-bottom:18px}
+.cat-chat>span{font-size:11px;color:#796452}
+.cat-chat p{font-size:15px;line-height:1.8;margin-top:5px}
+.opening-ticket{width:100%;background:var(--paper);border:1px dashed #cbb391;border-radius:10px;animation:appear .35s ease-out}
+.opening-ticket-top{display:flex;justify-content:space-between;gap:10px;background:var(--red);color:var(--paper);padding:13px 20px;border-radius:9px 9px 0;font-size:13px}
+.opening-ticket-top b{font-family:monospace;white-space:nowrap}
+.opening-ticket-body{display:flex;align-items:center;gap:16px;padding:16px 20px}
+.opening-icon{font-size:36px}
+.opening-ticket-body>div{display:flex;flex-direction:column;gap:5px}
+.opening-ticket-body small{font-size:11px;color:#796452}
+.opening-ticket-body strong{font-size:21px}
+.opening-ticket-body div>span{font-size:12px;color:#796452}
+.opening-ticket>p{font-size:12px;padding:0 20px 16px;color:var(--red)}
+.opening-play{gap:8px}
+.opening-play .status-drawer,.opening-play .chapter-map{display:none}
+.opening-play .chapter-header{margin-top:10px}
+.quick-narration{padding:0;border:0;background:none;box-shadow:none;margin-bottom:16px}
+.quick-narration .narration{font-size:16px;color:#735b4a;line-height:1.85}
+.quick-narration p{display:inline}
+.quick-narration p+p{margin:0}
+.quick-mode .dialogue-card{padding:13px 18px}
+.quick-mode .dialogue-message{font-size:17px;font-weight:600;line-height:1.75}
+.quick-mode .dialogue-label{margin-bottom:7px;font-size:11px}
+.quick-mode .choose-label{margin-top:20px}
+.option-notes{padding:0 16px 0 66px}
+.option-notes>summary{font-size:11px;color:#796452;padding:7px 0 10px}
+.option-notes .choice-detail{padding:0 0 10px}
+.choice-card .cost-hint{color:#8f522a}
+.past-choice{margin:20px 0 0}
+.identity-change,.item-changes span{animation:appear .3s ease-out}
+.replay-hook{padding:14px 16px;background:#f7e9bf;border-radius:8px;font-size:13px;line-height:1.8;margin:18px 0}
+.history-text{font-size:12px;margin-top:10px}
+.history-text>summary{font-size:11px;color:var(--red);padding:8px 0}
+.history-text p{font-size:12px;line-height:1.8;margin:10px 0;color:#735b4a}
+@media(max-width:650px){
+  .quick-home{gap:28px}
+  .quick-home .hero-copy h1{font-size:36px}
+  .quick-home .hero-copy .intro{max-width:none;font-size:14px}
+  .quick-home .game-facts{font-size:10px}
+  .fate-preview h2{font-size:28px}
+  .fate-preview .ticket-body{padding:25px}
+  .boss-cat{font-size:65px}
+  .opening-ticket-top{padding:12px 15px;font-size:12px}
+  .opening-ticket-body{padding:14px 15px;gap:12px}
+  .opening-ticket-body strong{font-size:19px}
+  .opening-ticket-body div>span{font-size:11px}
+  .opening-ticket>p{padding:0 15px 14px}
+  .quick-mode h1{font-size:23px;margin:12px 0 16px}
+  .quick-narration .narration{font-size:15px}
+  .quick-mode .dialogue-message{font-size:16px}
+  .option-notes{padding-left:51px}
+}

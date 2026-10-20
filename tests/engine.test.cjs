@@ -128,4 +128,13 @@ for (const value of [null, {}, { version: 2 }, { version: 3, seed: 1, roleId: 's
 for (const bad of [-1, 4294967296, NaN, 0.5, '1']) assert.throws(() => G.start('student', bad));
 for (const bad of [-1, 99, NaN, '0']) assert.throws(() => G.choose(G.start('student', 0), bad));
 assert.throws(() => G.rewind(G.start('worker', 0)));
-console.log(`PASS: ${runs} nine-choice runs, ${transitions} transitions, ${lockedChecks} rejected locked choices, ${meals} meal outcomes; all 45 endings and 6 encounters reached. Exact save/rewind, seeded randomness, identity gates, item consumption/redemption and delayed consequences verified. UI demo seed: ${specialSeed}.`);
+// A V3 save has no narrative fields. Replaying it must hydrate the new full-scene log
+// without changing the on-disk contract or making previously valid choices unusable.
+const legacySave = { version: 3, seed: 274, roleId: 'wanderer', choices: [0, 0], mealId: null };
+const legacyRestored = G.restore(legacySave);
+assert.deepEqual(G.serialize(legacyRestored), legacySave);
+for (const entry of legacyRestored.history) {
+  for (const field of ['text', 'message', 'desc', 'reply']) assert(typeof entry[field] === 'string' && entry[field].length > 0, `Missing replay field: ${field}`);
+}
+assert.deepEqual(G.restore(G.serialize(G.rewind(legacyRestored))), G.rewind(legacyRestored));
+console.log(`PASS: ${runs} nine-choice runs, ${transitions} transitions, ${lockedChecks} rejected locked choices, ${meals} meal outcomes; all 45 endings and 6 encounters reached. Exact save/rewind, seeded randomness, identity gates, item consumption/redemption, delayed consequences and V3 full-scene log migration verified. UI demo seed: ${specialSeed}.`);

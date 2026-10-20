@@ -166,9 +166,10 @@ class Handler(SimpleHTTPRequestHandler):
         # Serve an explicit static allowlist, never the repository, configuration or tokens.
         files = {'/': 'index.html', '/connect': 'connect.html', '/connect.html': 'connect.html'}
         files.update({'/' + name: name for name in ('index.html', 'app.js', 'engine.js', 'events.js', 'story.js', 'style.css', 'calendar.js', 'connect.js')})
-        if self.path not in files:
+        static_path = self.path.partition('?')[0]
+        if static_path not in files:
             return self.send_json(404, {'error': '未找到页面'})
-        self.path = '/' + files[self.path]
+        self.path = '/' + files[static_path]
         super().do_GET()
 
     def do_HEAD(self):

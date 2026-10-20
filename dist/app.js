@@ -8,7 +8,7 @@
   let collection = [];
   let resumeRecord = null, saveFailed = false;
   const sessionKey = 'maimen-session-v3';
-  let sceneFrame = 0, wholeScene = false;
+  let sceneFrame = 0, wholeScene = true;
   function resetReading() { sceneFrame = 0; }
   function paragraphs(text) {
     // Sentence boundaries only change layout; every original character is retained.
@@ -68,27 +68,43 @@
   }
   function renderHome() {
     state = null; feedback = false; resetReading();
-    app.innerHTML = `<section class="home-grid"><div class="hero-copy">
+    app.innerHTML = `<section class="home-grid quick-home"><div class="hero-copy">
       <div class="eyebrow"><span class="short-line"></span> 麦当劳主题 · 分支剧情小游戏</div>
-      <h1>选个身份，<br>重开<span class="underlined">离谱人生。</span></h1>
-      <p class="intro">选身份、做选择、收集道具，玩出 ${totalEndings} 种结局。<br>从普通人开局，看看最后混成院士，还是猫的下属。</p>
-      <div class="hero-art">${burger}<span class="art-star star-one">✦</span><span class="art-star star-two">?!</span>
-        <div class="round-stamp">人生正在<br><b>逐渐失控</b></div><span class="art-caption">THIS WAS SUPPOSED TO BE A LUNCH BREAK.</span></div>
-      <div class="game-facts"><span>🎲 3 次随机遭遇</span><span>▣ 道具解锁选项</span><span>⚑ ${totalEndings} 种人生</span></div>
-      </div><section class="ticket select-ticket"><div class="ticket-top"><span>LONG PLAY / 长篇失控版</span><span>VER. 3.0</span></div>
-      <div class="ticket-body"><span class="eyebrow muted">第一步 · 选择开局角色</span><h2>这次，你想当谁？</h2><p class="section-sub">不同身份，会遇到不同的故事和选择。</p>
-      <div class="role-list">${G.roles.map(r => `<button class="role-card ${r.id === selected ? 'selected' : ''}" data-role="${r.id}" aria-pressed="${r.id === selected}">
-        <span class="role-emoji">${r.icon}</span><span class="role-info"><small>${r.label} · 启动资金 ¥${r.cash}</small><strong>${r.name}</strong><span>${r.subtitle}</span></span><span class="role-radio" aria-hidden="true"></span></button>`).join('')}</div>
-      <button class="primary start-button" id="start">开始我的离谱人生 <span>↗</span></button>
+      <h1>来麦当劳，<br>重开一把<span class="underlined">人生。</span></h1>
+      <p class="intro">吃顿饭的工夫，你能混成什么样？<br>选几下，领一份属于你的人生事故。</p>
+      <button class="primary start-button" id="random-start">取号，开启我的麦门人生 <span>↗</span></button>
+      <p class="tiny">随机分配开局身份 · 免费玩 · 不用注册</p>
       ${resumeRecord ? `<button class="secondary resume-button" id="resume">${resumeRecord.game.mealId ? '查看上次人生' : `继续上次冒险 · 已完成 ${resumeRecord.game.choices.length}/9 次选择`} →</button>` : ''}
-      <p class="tiny center">每局 9 次选择 · 约 8 分钟 · 本机自动存档</p></div>
-      <div class="ticket-bottom"><span>已发生的人生 <b>${collection.length} / ${totalEndings}</b></span><span>下一次能有多离谱？</span></div></section></section>${gallery()}`;
+      <details class="manual-start"><summary>这次，我想自己选身份</summary><div class="role-list">${G.roles.map(r => `<button class="role-card ${r.id === selected ? 'selected' : ''}" data-role="${r.id}" aria-pressed="${r.id === selected}">
+        <span class="role-emoji">${r.icon}</span><span class="role-info"><small>${r.label} · 启动资金 ¥${r.cash}</small><strong>${r.name}</strong><span>${r.subtitle}</span></span><span class="role-radio" aria-hidden="true"></span></button>`).join('')}</div>
+        <button class="secondary" id="start">就用这个身份开局 →</button></details>
+      <div class="game-facts"><span>🎲 3 次随机遭遇</span><span>▣ 道具解锁选项</span><span>⚑ ${totalEndings} 种人生</span></div>
+      </div><section class="ticket fate-preview"><div class="ticket-top"><span>本店供应 · 人生反转</span><span>🐾</span></div>
+      <div class="ticket-body"><div class="boss-cat" aria-hidden="true">🐈<span>董事长</span></div>
+      <p class="preview-setup">你以为，那只是老板的猫。</p><h2>结果，猫是<br><span>老板的老板。</span></h2>
+      <div class="cat-chat"><span>老板</span><p>“董事长，您先吃。我的绩效不着急。”</p></div>
+      <p class="tiny">猫国线剧情预告 · 你的开局可能更离谱</p></div>
+      <div class="ticket-bottom"><span>每局 9 次选择</span><span>饭要趁热，人生可以重来。</span></div></section></section>${gallery()}`;
     app.querySelectorAll('[data-role]').forEach(el => el.onclick = () => {
       selected = el.dataset.role; renderHome();
+      app.querySelector('.manual-start').open = true;
       app.querySelector(`[data-role="${selected}"]`).focus({ preventScroll: true });
     });
-    document.querySelector('#start').onclick = () => { state = G.start(selected); renderGame(); focusHeading(); };
+    document.querySelector('#start').onclick = () => beginRun(selected);
+    document.querySelector('#random-start').onclick = () => beginRun();
     const resume = document.querySelector('#resume'); if (resume) resume.onclick = resumeGame;
+  }
+  function beginRun(roleId) {
+    const seed = G.start('student').seed;
+    selected = roleId || G.roles[seed % G.roles.length].id;
+    state = G.start(selected, seed); feedback = false; wholeScene = true; resetReading();
+    renderGame(); focusHeading();
+  }
+  function openingTicket() {
+    const role = G.roles.find(r => r.id === state.roleId);
+    return `<section class="opening-ticket" aria-label="人生小票"><div class="opening-ticket-top"><span>🍟 您的新人生已出餐</span><b>No. ${100 + state.seed % 900}</b></div>
+      <div class="opening-ticket-body"><span class="opening-icon" aria-hidden="true">${role.icon}</span><div><small>初始身份</small><strong>${role.name}</strong><span>启动资金 ¥${state.cash} · 背包空空，前途未知</span></div></div>
+      <p>订单备注：只点了午饭，没点这些事。</p></section>`;
   }
   function sidebar() {
     const role = G.roles.find(r => r.id === state.roleId), route = G.route(state);
@@ -118,16 +134,20 @@
   }
   function sceneReading(current, route) {
     const showChoices = wholeScene || sceneFrame === 1;
-    return `<div class="reading-toolbar"><span>${wholeScene ? '整幕阅读' : sceneFrame === 0 ? '① 发生了什么' : '② 轮到你了'}</span><button class="text-button" id="reading-mode">${wholeScene ? '切回分镜' : '整幕展开'}</button></div>
+    return `<div class="reading-toolbar"><span>${wholeScene ? '凭直觉选，故事马上发生' : sceneFrame === 0 ? '① 发生了什么' : '② 轮到你了'}</span><button class="text-button" id="reading-mode">${wholeScene ? '分镜慢慢看' : '切回一屏快玩'}</button></div>
       <h1>${current.title}</h1>
-      ${!showChoices || wholeScene ? `<div class="scene-card"><span class="scene-icon" aria-hidden="true">${current.random ? '🎲' : route?.icon || '🍟'}</span><div class="narration">${paragraphs(current.text)}</div></div>` : `<details class="scene-recap"><summary>回看刚才发生的事</summary><div class="narration">${paragraphs(current.text)}</div></details>`}
+      ${!showChoices || wholeScene ? `<div class="scene-card ${wholeScene ? 'quick-narration' : ''}">${wholeScene ? '' : `<span class="scene-icon" aria-hidden="true">${current.random ? '🎲' : route?.icon || '🍟'}</span>`}<div class="narration">${paragraphs(current.text)}</div></div>` : `<details class="scene-recap"><summary>回看刚才发生的事</summary><div class="narration">${paragraphs(current.text)}</div></details>`}
       ${showChoices ? `<div class="dialogue-card"><span class="dialogue-label">${current.speaker}</span><div class="dialogue-message">${paragraphs(current.message)}</div></div>
-        <div class="choose-label">你打算怎么办？<span>点开看说明，再决定</span></div>
-        <div class="options">${current.options.map((o, i) => `<article class="choice-card ${o.disabledReason ? 'choice-locked' : ''}">
-          <button class="option" id="option-${i}" data-preview="${i}" aria-expanded="false" aria-controls="choice-detail-${i}"><span class="option-letter">${String.fromCharCode(65 + i)}</span><span><strong>${o.title}</strong>${o.disabledReason ? `<em class="lock-reason">🔒 ${o.disabledReason}</em>` : o.finish ? '<em>⚑ 决定最终人生</em>' : ''}</span><span class="option-arrow" aria-hidden="true">＋</span></button>
-          <div class="choice-detail" id="choice-detail-${i}" hidden><p>${o.desc}</p>${effect(o) ? `<div class="effect-chips">${effect(o).split(' · ').map(x => `<span>${x}</span>`).join('')}</div>` : ''}
-          ${o.disabledReason ? '<p class="unavailable-note">条件未满足，看看其他办法。</p>' : `<button class="primary choice-confirm" data-choice="${i}" aria-label="就这么办：${o.title}">就这么办 <span>→</span></button>`}</div>
-        </article>`).join('')}</div>` : '<button class="primary read-next" id="read-next">接着看 <span>→</span></button><p class="tiny reading-hint">按自己的节奏读，下一幕才需要做选择。</p>'}`;
+        <div class="choose-label">你打算怎么办？<span>普通行动点一下就发生 · 可以回溯</span></div>
+        <div class="options">${current.options.map((o, i) => {
+          const guarded = o.cash < 0 || o.consume?.length > 0;
+          const preview = guarded || o.disabledReason;
+          return `<article class="choice-card ${o.disabledReason ? 'choice-locked' : ''}">
+          <button class="option" id="option-${i}" ${preview ? `data-preview="${i}" aria-expanded="false" aria-controls="choice-detail-${i}"` : `data-choice="${i}"`}><span class="option-letter">${String.fromCharCode(65 + i)}</span><span><strong>${o.title}</strong>${o.disabledReason ? `<em class="lock-reason">🔒 ${o.disabledReason}</em>` : guarded ? `<em class="cost-hint">${[o.cash < 0 ? `花费 ¥${-o.cash}` : '', ...(o.consume || []).map(x => `交出 ${x}`)].filter(Boolean).join(' · ')} · 点开确认</em>` : o.finish ? '<em>⚑ 决定最终人生</em>' : ''}</span><span class="option-arrow" aria-hidden="true">${preview ? '＋' : '→'}</span></button>
+          ${preview ? `<div class="choice-detail" id="choice-detail-${i}" hidden>` : `<details class="option-notes"><summary>看看说明</summary><div class="choice-detail">`}<p>${o.desc}</p>${effect(o) ? `<div class="effect-chips">${effect(o).split(' · ').map(x => `<span>${x}</span>`).join('')}</div>` : ''}
+          ${o.disabledReason ? '<p class="unavailable-note">条件未满足，看看其他办法。</p>' : guarded ? `<button class="primary choice-confirm" data-choice="${i}" aria-label="确认：${o.title}">确认，就这么办 <span>→</span></button>` : ''}</div>${preview ? '' : '</details>'}
+        </article>`;
+        }).join('')}</div>` : '<button class="primary read-next" id="read-next">接着看 <span>→</span></button><p class="tiny reading-hint">按自己的节奏读，下一幕才需要做选择。</p>'}`;
   }
   function renderGame() {
     saveProgress();
@@ -135,15 +155,16 @@
     const step = feedback ? state.step : state.step + 1;
     const labels = G.chapterLabels;
     const last = state.history.at(-1), route = G.route(state);
-    app.innerHTML = `<section class="play-layout">${sidebar()}<section class="story-panel">
+    app.innerHTML = `<section class="play-layout ${state.step === 0 ? 'opening-play' : ''}">${state.step === 0 ? openingTicket() : ''}${sidebar()}<section class="story-panel">
       <div class="chapter-header"><span>第 ${step} / ${G.totalStages} 章 · ${labels[step - 1]}</span><span>${route ? route.icon + ' ' + route.label : '命运尚未开机'}</span></div>
       <details class="chapter-map"><summary><span class="chapter-track" aria-hidden="true">${labels.map((_, i) => `<i class="${i < step ? 'active' : ''}"></i>`).join('')}</span><span>章节地图</span></summary><nav class="progress" aria-label="剧情进度">${labels.map((label, i) => `<span class="${i < step ? 'active' : ''}" ${i === step - 1 ? 'aria-current="step"' : ''}><i>${i + 1}</i><span>${label}</span></span>`).join('')}</nav></details>
-      <div class="story-content">${!feedback && current.random ? '<div class="random-banner">🎲 随机遭遇 · 本局回溯时保留同一事件</div>' : ''}
+      <div class="story-content ${wholeScene ? 'quick-mode' : ''}">${!feedback && current.random ? '<div class="random-banner">🎲 随机遭遇 · 本局回溯时保留同一事件</div>' : ''}
       ${feedback ? `<div class="feedback-heading"><span class="feedback-emoji">${state.endingId ? '⚑' : '?!'}</span><h1>${state.endingId ? '事情，彻底定性了。' : '事情开始不对劲了。'}</h1></div>
         <div class="choice-memory">你刚刚：${last.choice}</div><div class="scene-card feedback-card"><div class="narration">${paragraphs(last.reply)}</div></div>
         ${last.identity ? `<div class="identity-change"><small>身份发生变化</small><strong>${last.identity}</strong></div>` : ''}
         ${last.gained.length || last.consumed.length || last.cash ? `<div class="item-changes">${last.gained.map(x => `<span>＋ 获得：${x}</span>`).join('')}${last.consumed.map(x => `<span class="spent">− 消耗 / 寄存：${x}</span>`).join('')}${last.cash ? `<span>现金 ${last.cash > 0 ? '+' : '−'}¥${Math.abs(last.cash)}</span>` : ''}</div>` : ''}
         ${state.step === 1 ? `<div class="identity-change"><small>已进入新世界线</small><strong>${route.icon} ${route.label}</strong><span>命运已经听见了。建议想好下一句再说。</span></div>` : ''}
+        <details class="scene-recap past-choice"><summary>回看这一幕和选项说明</summary><div class="narration">${paragraphs(last.text)}${paragraphs(last.message)}<p>${last.desc}</p></div></details>
         <button class="primary continue" id="next">${state.endingId ? '先吃一口，再看三年后' : '我倒要看看还能怎样'} <span>→</span></button>`
         : sceneReading(current, route)}
       </div></section></section>`;
@@ -194,19 +215,20 @@
       <p class="ending-quote">“${e.quote}”</p><div class="intro future-story">${paragraphs(e.description)}</div>${e.consequences.length ? `<details class="consequences"><summary>前面的选择，留下了 ${e.consequences.length} 个后果</summary>${e.consequences.map(x => `<p>${x}</p>`).join('')}</details>` : ''}
       <div class="meal-epilogue"><small>而这一切，始于那顿午饭</small><p>${e.mealEpilogue}</p></div>
       <div class="end-stats"><div><strong>${state.energy}</strong><span>残存理智</span></div><div><strong>${state.mood}</strong><span>离谱指数</span></div><div><strong>¥${state.cash}</strong><span>当日余额</span></div></div>
-      <div class="end-actions"><button class="primary" id="rewind">回到上个岔路 ↶</button><button class="secondary" id="again">换个人生开局</button><button class="secondary" id="share">复制事故报告</button></div>
+      <div class="replay-hook">🍟 换个取餐号，下次试试${state.roleId === 'wanderer' ? '让 AI 替你上班，看谁先升职' : '跟着老板的猫，看看谁才是董事长'}。</div>
+      <div class="end-actions"><button class="primary" id="rewind">回到上个岔路 ↶</button><button class="secondary" id="again">再取一个人生号</button><button class="secondary" id="share">复制事故报告</button></div>
       <p class="tiny">已收集 ${collection.length} / ${totalEndings} 种人生。回溯会恢复选择前的状态，已解锁记录保留。</p></div>
       <section class="ticket receipt"><div class="ticket-top"><span>LIFE INCIDENT REPORT</span><span>CASE ${String(Object.keys(G.endings).indexOf(e.key) + 1).padStart(2, '0')}</span></div>
       <div class="ticket-body"><h2>人生事故小票</h2><p class="receipt-sub">麦门人生模拟器 / 你当时真是这么选的</p><div class="receipt-divider"></div>
       <div class="receipt-row"><span>出门时</span><b>${role.name}</b></div><div class="receipt-row"><span>三年后</span><b>${e.title}</b></div>
-      <details class="journey-log"><summary>展开完整的 ${state.history.length} 次人生转折 ↓</summary><div class="journey">${state.history.map((h, i) => `<div><span>0${i + 1}</span><p><b>${h.title}</b><br>↳ ${h.choice}${h.identity ? '<br><em>身份 → ' + h.identity + '</em>' : ''}${h.gained.length ? '<br><em>获得：' + h.gained.join('、') + '</em>' : ''}${h.consumed.length ? '<br><em>失去：' + h.consumed.join('、') + '</em>' : ''}</p></div>`).join('')}</div></details>
+      <details class="journey-log"><summary>展开完整的 ${state.history.length} 次人生转折 ↓</summary><div class="journey">${state.history.map((h, i) => `<div><span>0${i + 1}</span><section><p><b>${h.title}</b><br>↳ ${h.choice}${h.identity ? '<br><em>身份 → ' + h.identity + '</em>' : ''}${h.gained.length ? '<br><em>获得：' + h.gained.join('、') + '</em>' : ''}${h.consumed.length ? '<br><em>失去：' + h.consumed.join('、') + '</em>' : ''}</p><details class="history-text"><summary>回看完整剧情</summary>${paragraphs(h.text)}${paragraphs(h.message)}<p>选项说明：${h.desc}</p>${paragraphs(h.reply)}</details></section></div>`).join('')}</div></details>
       <div class="receipt-row"><span>遗留证物</span><b>${state.inventory.join('、') || '一张小票'}</b></div>
       <div class="receipt-meal"><span>${meal.icon}</span><div><b>${meal.name}</b><small>${meal.items}</small></div><strong>¥${meal.price}</strong></div>
       <div class="receipt-divider"></div><div class="receipt-row total"><span>当日支出</span><b>¥${meal.price - state.history.reduce((sum, h) => sum + Math.min(0, h.cash), 0)}.00</b></div>
       <div class="receipt-row"><span>途中收入</span><b>¥${state.history.reduce((sum, h) => sum + Math.max(0, h.cash), 0)}.00</b></div><div class="receipt-row"><span>人生维修费</span><b>暂时无法估算</b></div><div class="barcode" aria-hidden="true"></div>
       <p class="tiny center">NO REFUNDS ON DESTINY. BUT YOU CAN REWIND.<br>这是虚构游戏记录，不是实际消费凭证。</p></div></section></section>${gallery()}`;
     document.querySelector('#rewind').onclick = goBack;
-    document.querySelector('#again').onclick = () => { renderHome(); focusHeading(); };
+    document.querySelector('#again').onclick = () => beginRun(state.roleId === 'wanderer' ? 'worker' : 'wanderer');
     document.querySelector('#share').onclick = async () => {
       if (busy) return; busy = true;
       const text = `🍟 麦门人生事故报告：${e.title}\n${e.quote}\n\n出门时我是${role.name}：\n${state.history.map(h => '→ ' + h.choice).join('\n')}\n\n${e.description}\n${e.consequences.join('\n')}\n\n最后吃了${meal.name}，当日余额 ¥${state.cash}。\n麦门人生模拟器 · 虚构剧情与模拟价格，非官方试玩。`;

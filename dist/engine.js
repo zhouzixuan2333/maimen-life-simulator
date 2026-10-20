@@ -3,18 +3,18 @@
   const story = typeof module !== 'undefined' && module.exports ? require('./story.js') : root.LifeStory;
   const events = typeof module !== 'undefined' && module.exports ? require('./events.js') : root.LifeEvents;
   const roles = [
-    { id: 'student', icon: '🎓', name: '论文赶工人', subtitle: '论文没动，学术地位可能先动了。', label: '校园事故', cash: 30, energy: 75, mood: 5, intro: '导师问进度。你每多说一句话，世界就多一个误会。', choices: [
+    { id: 'student', icon: '🎓', name: '论文赶工人', subtitle: '论文没动，学术地位可能先动了。', label: '校园事故', cash: 30, energy: 75, mood: 5, intro: '你刚在麦当劳坐下，薯条还没拆，导师的消息先到了。你每多说一句话，世界就多一个误会。', choices: [
       ['回复“正在收尾”，先稳住导师', '你指的是收起电脑，他理解成了研究成果。', '导师回了个大拇指，顺手把你加进了“国际研讨会主讲人”群。你连群名里的三个词都不敢点开看。', 'paper'],
       ['先吃饭，论文又不会自己跑掉', '论文没跑，但有人说薯条跑了。', '你把电脑一扣，端着午饭坐下。室友忽然压低声音：“停。有人动过我的薯条。”', 'detective'],
       ['把电脑日期改成昨天，增加一天寿命', '如果 DDL 属于时间问题，就从时间下手。', '时间改好了。室友刚打完的喷嚏倒吸了回去，你隐约觉得自己改的可能不只是日期。', 'time']
     ] },
-    { id: 'worker', icon: '💼', name: '下班逃跑家', subtitle: '17:59，你的命运收到一条新需求。', label: '职场事故', cash: 40, energy: 60, mood: 10, intro: '老板问“在吗”。你很在，但不想在这个意义上在。', choices: [
+    { id: 'worker', icon: '💼', name: '下班逃跑家', subtitle: '17:59，你的命运收到一条新需求。', label: '职场事故', cash: 40, energy: 60, mood: 10, intro: '麦当劳纸袋已经拎好，老板问“在吗”。你很在，但不想在这个意义上在。', choices: [
       ['回复“拉个会吧”，把问题扔回去', '这句话的危险程度，取决于谁真的来了。', '你随手建了个会。老板拉了总监，总监拉了老板的老板。你终于知道了什么叫把事情做大。', 'meeting'],
       ['让 AI 扮演自己，先去吃饭', '本人的职责：离线。分身的职责：收到。', '你刚走出大门，AI 发来通知：“已替您完成今日社交。另：我刚获得了晋升提名。”', 'double'],
       ['提上饭袋，钻进最先来的电梯', '去几楼不重要，离开工位最重要。', '电梯停在创业中心。一个穿西装的人看见纸袋，热情握手：“这就是你们的样品吧？”', 'pitch']
     ] },
-    { id: 'wanderer', icon: '🎧', name: '周末漫游者', subtitle: '出门前是市民，回家时不一定。', label: '城市事故', cash: 50, energy: 80, mood: 5, intro: '今天没安排。命运看见空档，决定亲自排一下。', choices: [
-      ['跟着一只看起来很有编制的猫', '它走路的气势，比你上班还确定。', '猫拐进小巷，回头确认你跟上了。你开始怀疑这不是偶遇，是招聘。', 'cat'],
+    { id: 'wanderer', icon: '🎧', name: '周末漫游者', subtitle: '出门前是市民，回家时不一定。', label: '城市事故', cash: 50, energy: 80, mood: 5, intro: '你走到麦当劳门口，碰见了老板朋友圈里的那只猫。它戴着工牌，步伐比老板还像老板。', choices: [
+      ['跟着老板的猫，看看它去哪上班', '你以为老板养猫，猫的理解可能不一样。', '老板端着餐盘追了出来，冲猫点头：“董事长，您先吃。我的绩效不着急。”猫看了你一眼，把“人类随行”的牌子推过来。', 'cat'],
       ['到店取餐，看看今天排到几号', '一次正常到不能再正常的操作。按理说。', '机器吐出 404 号。你看向取餐屏，屏幕也在看你。', 'portal'],
       ['去广场坐着，谁也不搭理', '非常遗憾，广场的鸽子不这么想。', '你刚坐下，鸽子就围了上来。它们不是来抢食的，其中一只甚至带了简历。', 'pigeon']
     ] }
@@ -144,7 +144,7 @@
       credential: option.item || state.credential,
       inventory: [...new Set([...state.inventory.filter(x => !consumed.includes(x)), ...gained])],
       flags: [...new Set([...state.flags, ...(option.flags || [])])],
-      history: [...state.history, { nodeId: current.id, optionIndex: index, title: current.title, choice: option.title, reply: option.reply, cash: option.cash || 0, identity: option.identity || null, item: option.item || null, gained, consumed, routeId: nextRoute, random: Boolean(current.random) }]
+      history: [...state.history, { nodeId: current.id, optionIndex: index, title: current.title, text: current.text, message: current.message, choice: option.title, desc: option.desc, reply: option.reply, cash: option.cash || 0, identity: option.identity || null, item: option.item || null, gained, consumed, routeId: nextRoute, random: Boolean(current.random) }]
     };
   }
   function dine(state, id) {
