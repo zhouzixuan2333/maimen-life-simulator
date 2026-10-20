@@ -226,6 +226,17 @@ summary:focus-visible{outline:3px solid #407d9b;outline-offset:4px}
 .history-text{font-size:12px;margin-top:10px}
 .history-text>summary{font-size:11px;color:var(--red);padding:8px 0}
 .history-text p{font-size:12px;line-height:1.8;margin:10px 0;color:#735b4a}
+.status-drawer .simple-status{display:block}
+.extra-info{margin-top:16px;font-size:12px;line-height:1.8;color:#796452}
+.extra-info>summary{padding:8px 0;color:var(--red)}
+.extra-info p{margin:8px 0;overflow-wrap:anywhere}
+.extra-info .quest-status{display:flex;margin:12px 0}
+.simple-track{margin-top:10px}
+.simple-ending{display:block;max-width:760px;margin-inline:auto}
+.receipt-fold{margin:28px 0;font-size:13px;color:var(--red)}
+.receipt-fold>summary{padding:16px;background:#f1e8d8;border:1px solid var(--line);border-radius:8px}
+.receipt-fold .receipt{margin:18px auto;color:var(--dark);max-width:520px}
+.simple-ending .end-actions{display:flex;flex-wrap:wrap}
 @media(max-width:650px){
   .quick-home .hero-copy h1{font-size:36px;margin:16px 0}
   .quick-home .hero-copy .intro{max-width:none;font-size:14px}
