@@ -237,6 +237,8 @@ summary:focus-visible{outline:3px solid #407d9b;outline-offset:4px}
 .receipt-fold>summary{padding:16px;background:#f1e8d8;border:1px solid var(--line);border-radius:8px}
 .receipt-fold .receipt{margin:18px auto;color:var(--dark);max-width:520px}
 .simple-ending .end-actions{display:flex;flex-wrap:wrap}
+.choice-hint{display:block;margin-top:5px;font-size:12px;line-height:1.7;color:#71594b}
+.status-panel .inventory>span>small{display:block;margin-top:4px;max-width:100%;font-size:11px;line-height:1.7;letter-spacing:0}
 @media(max-width:650px){
   .quick-home .hero-copy h1{font-size:36px;margin:16px 0}
   .quick-home .hero-copy .intro{max-width:none;font-size:14px}

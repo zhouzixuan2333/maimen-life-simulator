@@ -108,12 +108,21 @@
     const shortIdentity = { research: '学术专家', sleuth: '调查员', time: '时空从业者', manager: '管理者', ai: 'AI 同行', founder: '创业者', cat: '猫国代表', cosmic: '宇宙事务人员', pigeon: '鸽界同行' }[state.identityTag]
       || { student: '学生', worker: '打工人', wanderer: '闲逛的人' }[state.roleId];
     return `<aside class="player-tools"><details class="status-drawer"><summary><span>${route?.icon || role.icon} <b>${shortIdentity}</b></span><span>¥${state.cash} · 道具 ${state.inventory.length} <span class="drawer-hint">查看 ▾</span></span></summary><div class="status-panel simple-status">
-      <div class="inventory"><small>你的道具 · 能用时，选项会提示</small>${state.inventory.length ? state.inventory.map(x => `<span>▣ ${x}</span>`).join('') : '<span>暂时没有道具</span>'}</div>
+      <div class="inventory"><small>你的道具 · 能用时，选项会提示</small>${state.inventory.length ? state.inventory.map(x => `<span>▣ ${x}${itemMeaning(x) ? `<small>${itemMeaning(x)}</small>` : ''}</span>`).join('') : '<span>暂时没有道具</span>'}</div>
       <details class="extra-info"><summary>称号与其他记录</summary><p>完整称号：${state.identity}</p><p>出门时：${role.name}${route ? ' · ' + route.label : ''}</p>
       <p>理智 ${state.energy} / 100 · 离谱值 ${state.mood} / 100</p><p class="tiny">这两个数值只记录状态，不决定选项能不能点。</p>
       ${state.credential ? `<div class="quest-status"><span>${state.flags.includes('validated') ? '✓ 第 4 步已过关' : '○ 第 4 步尚未过关'}</span><span>${state.flags.includes('resolved') ? '✓ 第 7 步已过关' : '○ 第 7 步尚未过关'}</span><span>${state.inventory.includes(state.credential) ? '✓ 还带着' : '○ 没带着'}「${state.credential}」</span></div><p class="tiny">这些记录会影响最后的特殊选项，不用全做完也能玩到结局。</p>` : ''}
       <p class="tiny">回溯会恢复钱和道具；本局遇到的随机事件不重抽。</p></details>
       </div></details><div class="sidebar-actions">${state.history.length ? '<button class="text-button" id="back-choice">↶ 回到上个岔路</button>' : ''}<button class="text-button" id="restart">重选角色</button><span class="tiny save-status">${saveFailed ? '未能存档，请勿关闭页面' : '已自动存档'}</span></div></aside>`;
+  }
+  function itemMeaning(item) {
+    const notes = {
+      '宇宙胶带': '修补工具。遇到可修理的选项时用一次，不是身份证明。',
+      '万能通行证': '遇到路检时免检查一次。不能代替你的原证件。',
+      '人情券': '别人答应帮你一次。可请人担保，或让拦路的猫放行。',
+      '核验回执': '已经检查过身份的记录。接到回访电话时可以出示。'
+    };
+    return notes[item] || (item === state.credential ? '证明你当前身份的原件，后面可能要出示。' : '');
   }
   function goBack() { state = G.rewind(state); feedback = false; resetReading(); renderGame(); focusHeading(); }
   function bindSidebar() {
@@ -139,7 +148,7 @@
           const guarded = o.cash < 0 || o.consume?.length > 0;
           const preview = guarded || o.disabledReason;
           return `<article class="choice-card ${o.disabledReason ? 'choice-locked' : ''}">
-          <button class="option" id="option-${i}" ${preview ? `data-preview="${i}" aria-expanded="false" aria-controls="choice-detail-${i}"` : `data-choice="${i}"`}><span class="option-letter">${String.fromCharCode(65 + i)}</span><span><strong>${o.title}</strong>${o.disabledReason ? `<em class="lock-reason">🔒 ${o.disabledReason}</em>` : guarded ? `<em class="cost-hint">${[o.cash < 0 ? `花费 ¥${-o.cash}` : '', ...(o.consume || []).map(x => `交出 ${x}`)].filter(Boolean).join(' · ')} · 点开确认</em>` : o.finish ? '<em>⚑ 决定最终人生</em>' : ''}</span><span class="option-arrow" aria-hidden="true">${preview ? '＋' : '→'}</span></button>
+          <button class="option" id="option-${i}" ${preview ? `data-preview="${i}" aria-expanded="false" aria-controls="choice-detail-${i}"` : `data-choice="${i}"`}><span class="option-letter">${String.fromCharCode(65 + i)}</span><span><strong>${o.title}</strong>${o.hint ? `<span class="choice-hint">${o.hint}</span>` : ''}${o.disabledReason ? `<em class="lock-reason">🔒 ${o.disabledReason}</em>` : guarded ? `<em class="cost-hint">${[o.cash < 0 ? `花费 ¥${-o.cash}` : '', ...(o.consume || []).map(x => `交出 ${x}`)].filter(Boolean).join(' · ')} · 点开确认</em>` : o.finish ? '<em>⚑ 决定最终人生</em>' : ''}</span><span class="option-arrow" aria-hidden="true">${preview ? '＋' : '→'}</span></button>
           ${preview ? `<div class="choice-detail" id="choice-detail-${i}" hidden>` : `<details class="option-notes"><summary>看看说明</summary><div class="choice-detail">`}<p>${o.desc}</p>${effect(o) ? `<div class="effect-chips">${effect(o).split(' · ').map(x => `<span>${x}</span>`).join('')}</div>` : ''}
           ${o.disabledReason ? '<p class="unavailable-note">条件未满足，看看其他办法。</p>' : guarded ? `<button class="primary choice-confirm" data-choice="${i}" aria-label="确认：${o.title}">确认，就这么办 <span>→</span></button>` : ''}</div>${preview ? '' : '</details>'}
         </article>`;

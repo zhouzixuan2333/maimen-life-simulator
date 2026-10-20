@@ -85,7 +85,10 @@
     const expand = value => typeof value === 'string' ? value.replaceAll('$credential', state.credential || '原始凭证') : Array.isArray(value) ? value.map(expand) : value;
     return { ...raw, stage: state.step + 1, options: raw.options.map(source => {
       const o = Object.fromEntries(Object.entries(source).map(([k, v]) => [k, expand(v)]));
-      if (o.flags?.includes('pawned') && state.step > 5) o.desc = '道具柜已经关门：本局无法赎回原件，会失去隐藏人生的资格。';
+      if (o.flags?.includes('pawned')) {
+        o.hint = state.step > 5 ? '原证件会被收走；道具柜已关门，这局拿不回来了。' : '原证件会被收走，身份检查可能要用；第 6 步可花 ¥6 赎回。';
+        if (state.step > 5) o.desc = '道具柜已经关门：本局无法赎回原件，会失去隐藏人生的资格。换来的通行证只能应付路检，不能代替原件。';
+      }
       return { ...o, disabledReason: conditions(state, o) };
     }) };
   }
@@ -97,7 +100,19 @@
     else if ([2, 4, 7].includes(state.step)) {
       const slot = { 2: 0, 4: 1, 7: 2 }[state.step];
       const event = events.randomEvents.find(e => e.id === state.eventIds[slot]);
-      raw = { ...event, id: `random-${slot}-${event.id}`, speaker: `随机事件 ${slot + 1}/3 · 本局已固定`, random: true };
+      const errands = {
+        paper: ['去演示刚才的研究', '去准备交给学术委员会的材料', '回去决定这项研究接下来怎么做'],
+        detective: ['去找摄像头查薯条失踪案', '去准备交给调查局的材料', '回调查局给这件案子下结论'],
+        time: ['去时间管理局核对自己的身份', '去找工具，处理过去和未来的麻烦', '回去决定怎么处理混乱的时间'],
+        meeting: ['去向老板说明刚才那场会的成果', '去准备人事要的材料', '回公司决定新的开会规矩'],
+        double: ['去证明自己才是账号的主人', '去准备和 AI 分身谈工作安排', '回公司决定以后谁来上班'],
+        pitch: ['去给投资人看项目材料', '去为下一轮融资说明做准备', '回去决定这门生意怎么做'],
+        cat: ['去猫国门口登记身份', '去为猫国的正式任职做准备', '回猫国决定接下来的工作'],
+        portal: ['去向维修员报告取餐号引发的故障', '去准备下一次系统检查', '回去决定怎么处理现实里的故障'],
+        pigeon: ['去参加鸽界的入行考核', '去为鸽界的正式任职做准备', '回广场决定接下来的工作']
+      };
+      const interruptions = { pawnshop: '，路边一家小店的老板叫住了你。', checkpoint: '，却被路障拦住了。', printer: '，一台打印机挡住了去路。', catgate: '，门口却被一只猫堵住了。', courier: '，一只快递鸽追了上来。', survey: '，手机响了。' };
+      raw = { ...event, text: `你正${errands[state.routeId][slot]}${interruptions[event.id]}${event.text}`, id: `random-${slot}-${event.id}`, speaker: `随机事件 ${slot + 1}/3 · 本局已固定`, random: true };
     } else if (state.step === 3) {
       const t = events.routeTrials[state.routeId];
       raw = { id: `${state.routeId}-trial`, title: t[0], text: `${t[1]}你现在的身份是「${state.identity}」。`, speaker: '资格试炼 · 背包里的东西开始有用了', message: '工作人员：不能只报头衔，得拿出点东西。', options: [
@@ -108,8 +123,8 @@
     } else if (state.step === 5) {
       raw = { id: 'supply', title: '道具柜就要关门了，你只能办一件事。', text: '老板正在把“今天营业”翻成“昨天倒闭”。你的背包开始有故事，钱包开始有意见。接下来是身份复核，最好想好要用什么。', speaker: '整备回合 · 不随机', message: '老板：原件、胶带、人情，总得带一样。', options: [
         { title: '花 ¥6 赎回「$credential」', desc: '仅寄存过且尚未持有原件时可选。', requiresFlag: 'pawned', absentItem: '$credential', give: ['$credential'], cash: -6, reply: '老板把原件递给你，还附送一句：“看吧，人生售后是有用的。”你决定不跟他争。' },
-        { title: '花 ¥5 买宇宙胶带', desc: '保留到后续随机事件；不能代替现在缺失的资格。', give: ['宇宙胶带'], absentItem: '宇宙胶带', cash: -5, reply: '你把胶带塞进背包。世界破不破另说，至少你有维修意愿。' },
-        { title: '帮老板盘点一会儿，换一张人情券', desc: '理智 −10；人情券可帮你解决身份危机。', give: ['人情券'], energy: -10, reply: '库存只有三件，账上有三百件。你没问，老板也没解释。他郑重欠了你一个人情。' },
+        { title: '花 ¥5，买一卷修东西的胶带', hint: '只留给后面的修理机会；下一步的身份复核用不上。', desc: '得到“宇宙胶带”，使用一次后消失。后面不一定遇到修理机会；如果缺的是身份复核的担保，可以选帮忙换人情券。', give: ['宇宙胶带'], absentItem: '宇宙胶带', cash: -5, reply: '老板拿出一卷“宇宙胶带”：“修东西，一卷修一次。证明你是谁？那个真粘不了。”你把它塞进背包备用。' },
+        { title: '帮老板盘点，换他帮你一次', hint: '得到人情券；下一步可用它请人担保。', desc: '理智 −10；得到“人情券”，可在身份复核时消耗它请人担保。', give: ['人情券'], energy: -10, reply: '库存只有三件，账上有三百件。你没问，老板也没解释。他写下一张“人情券”：“下次有人不信你的身份，拿这个找我担保。”' },
         { title: '什么都不买，坐着恢复一下理智', desc: '理智 +15；保留所有物品和现金。', energy: 15, reply: '你盯着墙发呆。墙上写着“发呆免费”，你第一次觉得这家店很诚实。' }
       ] };
     } else if (state.step === 6) {
