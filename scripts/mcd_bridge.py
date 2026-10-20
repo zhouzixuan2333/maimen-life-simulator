@@ -165,7 +165,7 @@ class Handler(SimpleHTTPRequestHandler):
             return self.send_json(200, {'connected': bool(self.server.calendar)})
         # Serve an explicit static allowlist, never the repository, configuration or tokens.
         files = {'/': 'index.html', '/connect': 'connect.html', '/connect.html': 'connect.html'}
-        files.update({'/' + name: name for name in ('index.html', 'app.js', 'engine.js', 'events.js', 'story.js', 'style.css', 'calendar.js', 'connect.js', 'classic.html', 'harbor-engine.js', 'harbor.js', 'harbor.css')})
+        files.update({'/' + name: name for name in ('index.html', 'app.js', 'engine.js', 'events.js', 'story.js', 'style.css', 'calendar.js', 'connect.js', 'classic.html', 'harbor-engine.js', 'harbor.js', 'harbor.css', 'harbor.html', 'cat-story.js', 'cat-engine.js', 'cat-scene.js', 'cat-app.js', 'cat.css', 'assets/cat-states.png')})
         static_path = self.path.partition('?')[0]
         if static_path not in files:
             return self.send_json(404, {'error': '未找到页面'})

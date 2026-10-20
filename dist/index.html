@@ -2,16 +2,17 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#ad3a2b">
-  <meta name="description" content="17:30 下班，口袋里只有12块。能不能在日落前约到搭子，带着薯条赶到码头？五回合麦当劳主题小游戏，免费玩，无需登录。">
-  <title>去码头整点薯条 · 麦门人生</title>
-  <link rel="stylesheet" href="harbor.css?v=0.1">
-  <script defer src="harbor-engine.js?v=0.1"></script><script defer src="harbor.js?v=0.1"></script><script defer src="calendar.js?v=4.0"></script>
+  <meta name="theme-color" content="#a64433">
+  <meta name="description" content="重生在麦当劳门口，这班，猫不上。养一只橘白猫，做十四次选择，看看它能混成什么样。七天养成小游戏，免费玩，无需登录。">
+  <title>这班，猫不上 · 麦门人生</title>
+  <link rel="preload" href="assets/cat-states.png" as="image">
+  <link rel="stylesheet" href="cat.css?v=1.0">
+  <script defer src="cat-story.js?v=1.0"></script><script defer src="cat-engine.js?v=1.0"></script><script defer src="cat-scene.js?v=1.0"></script><script defer src="cat-app.js?v=1.0"></script><script defer src="calendar.js?v=4.0"></script>
 </head>
 <body>
-  <header><a class="brand" href="./index.html" aria-label="返回麦门人生首页"><span>🍟</span> 麦门人生</a><span class="version">五回合试玩 · 非官方</span></header>
+  <header class="topbar"><a class="brand" href="index.html" aria-label="返回麦门人生首页"><span>🍟</span>麦门人生</a><div class="header-right"><small>七天试玩 · 非官方</small><button id="motion-toggle" aria-pressed="true" title="开关小猫和场景动画">动画 开</button></div></header>
   <main id="app"></main>
-  <footer>非麦当劳官方产品。剧情、价格、等候时间均为游戏虚构，不会实际下单。进度保存在当前浏览器。<br><a href="https://github.com/zhouzixuan2333/maimen-life-simulator" target="_blank" rel="noopener noreferrer">GitHub · 喜欢就点个 Star ☆</a></footer>
-  <dialog id="share-dialog"><h2>今天的出发小票</h2><p>长按或选中文字，即可复制分享。</p><textarea id="share-text" readonly aria-label="分享文字"></textarea><button class="primary" id="close-share">收好小票</button></dialog>
+  <footer>非麦当劳官方产品。剧情与人物均为虚构；不会实际下单。猫粮归猫，薯条归人。进度只保存在当前浏览器。<br><a href="https://github.com/zhouzixuan2333/maimen-life-simulator" target="_blank" rel="noopener noreferrer">GitHub · 喜欢小橘？点个 Star ☆</a></footer>
+  <dialog id="share-dialog"><h2>小橘的生活小票</h2><p>长按图片或保存到设备，分享你养出来的猫。</p><img id="card-image" alt="我养的小橘和它七天后的生活小票"><a id="download-card" class="primary" download="小橘的七天.png">保存图片</a><button id="close-share" class="secondary">收好小票</button></dialog>
 </body>
 </html>
