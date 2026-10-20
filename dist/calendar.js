@@ -13,7 +13,7 @@
       const link = document.createElement('a'); link.href = './connect'; link.textContent = '连接我的官方 MCP，查看当期活动'; body.append(link); return;
     }
     title.textContent = '现实支线已解锁 · 官方当期活动';
-    const intro = document.createElement('p'); intro.textContent = '你已经管过猫国、修过宇宙。现在可以安排一次现实中的午饭：以下是官方活动信息，不是游戏虚构剧情。';
+    const intro = document.createElement('p'); intro.textContent = '想安排一次现实中的聚餐？以下是官方活动信息，不是游戏虚构剧情。';
     const source = document.createElement('p'); source.className = 'tiny'; source.textContent = `来源：${calendar.source} · ${calendar.tool} · 查询于 ${new Date(calendar.fetchedAt).toLocaleString()}`;
     const text = document.createElement('pre'); text.textContent = calendar.text;
     body.append(intro, source, text);

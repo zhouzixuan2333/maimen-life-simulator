@@ -90,7 +90,7 @@ class BridgeTests(unittest.TestCase):
             with urllib.request.urlopen(base + '/api/calendar') as r:
                 self.assertEqual(json.load(r), {'mode': 'offline'})
             with urllib.request.urlopen(base + '/api/setup') as r: nonce = json.load(r)['nonce']
-            for name in ['style.css', 'app.js', 'engine.js', 'events.js', 'story.js', 'calendar.js']:
+            for name in ['style.css', 'app.js', 'engine.js', 'events.js', 'story.js', 'calendar.js', 'index.html', 'classic.html', 'harbor-engine.js', 'harbor.js', 'harbor.css']:
                 with urllib.request.urlopen(base + '/' + name + '?v=3.1') as r:
                     self.assertEqual(r.read(), (b.ROOT / 'dist' / name).read_bytes())
             for path in ['/../README.md', '/.env', '/scripts/mcd_bridge.py',

@@ -18,6 +18,9 @@ jobs:
           node --check dist/app.js
           node --check dist/calendar.js
           node --check dist/connect.js
+          node --check dist/harbor.js
+          node --check dist/harbor-engine.js
+          node tests/harbor.test.cjs
           node tests/engine.test.cjs
       - name: Check local MCP bridge
         run: python3 -m unittest discover -s tests -p 'test_*.py'
