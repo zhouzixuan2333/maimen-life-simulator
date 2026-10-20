@@ -70,8 +70,9 @@
     state = null; feedback = false; resetReading();
     app.innerHTML = `<section class="home-grid quick-home"><div class="hero-copy">
       <div class="eyebrow"><span class="short-line"></span> 麦当劳主题 · 分支剧情小游戏</div>
-      <h1>来麦当劳，<br>重开一把<span class="underlined">人生。</span></h1>
-      <p class="intro">吃顿饭的工夫，你能混成什么样？<br>选几下，领一份属于你的人生事故。</p>
+      <h1>这辈子，<br>要不<span class="underlined">当只猫？</span></h1>
+      <p class="intro">来麦当劳，重开一把人生。<br>午饭照吃，班就不一定照上了。</p>
+      <section class="cat-teaser" aria-label="猫国线开场预告"><span class="teaser-cat" aria-hidden="true">🐈</span><div><small>某一种人生的开场</small><p>门口那只猫，似乎不用上班。</p><span>要不要跟它走，看看怎么混的？</span></div></section>
       <button class="primary start-button" id="random-start">取号，开启我的麦门人生 <span>↗</span></button>
       <p class="tiny">随机分配开局身份 · 免费玩 · 不用注册</p>
       ${resumeRecord ? `<button class="secondary resume-button" id="resume">${resumeRecord.game.mealId ? '查看上次人生' : `继续上次冒险 · 已完成 ${resumeRecord.game.choices.length}/9 次选择`} →</button>` : ''}
@@ -79,12 +80,7 @@
         <span class="role-emoji">${r.icon}</span><span class="role-info"><small>${r.label} · 启动资金 ¥${r.cash}</small><strong>${r.name}</strong><span>${r.subtitle}</span></span><span class="role-radio" aria-hidden="true"></span></button>`).join('')}</div>
         <button class="secondary" id="start">就用这个身份开局 →</button></details>
       <div class="game-facts"><span>🎲 3 次随机遭遇</span><span>▣ 道具解锁选项</span><span>⚑ ${totalEndings} 种人生</span></div>
-      </div><section class="ticket fate-preview"><div class="ticket-top"><span>本店供应 · 人生反转</span><span>🐾</span></div>
-      <div class="ticket-body"><div class="boss-cat" aria-hidden="true">🐈<span>董事长</span></div>
-      <p class="preview-setup">你以为，那只是老板的猫。</p><h2>结果，猫是<br><span>老板的老板。</span></h2>
-      <div class="cat-chat"><span>老板</span><p>“董事长，您先吃。我的绩效不着急。”</p></div>
-      <p class="tiny">猫国线剧情预告 · 你的开局可能更离谱</p></div>
-      <div class="ticket-bottom"><span>每局 9 次选择</span><span>饭要趁热，人生可以重来。</span></div></section></section>${gallery()}`;
+      </div></section>${gallery()}`;
     app.querySelectorAll('[data-role]').forEach(el => el.onclick = () => {
       selected = el.dataset.role; renderHome();
       app.querySelector('.manual-start').open = true;
@@ -215,7 +211,7 @@
       <p class="ending-quote">“${e.quote}”</p><div class="intro future-story">${paragraphs(e.description)}</div>${e.consequences.length ? `<details class="consequences"><summary>前面的选择，留下了 ${e.consequences.length} 个后果</summary>${e.consequences.map(x => `<p>${x}</p>`).join('')}</details>` : ''}
       <div class="meal-epilogue"><small>而这一切，始于那顿午饭</small><p>${e.mealEpilogue}</p></div>
       <div class="end-stats"><div><strong>${state.energy}</strong><span>残存理智</span></div><div><strong>${state.mood}</strong><span>离谱指数</span></div><div><strong>¥${state.cash}</strong><span>当日余额</span></div></div>
-      <div class="replay-hook">🍟 换个取餐号，下次试试${state.roleId === 'wanderer' ? '让 AI 替你上班，看谁先升职' : '跟着老板的猫，看看谁才是董事长'}。</div>
+      <div class="replay-hook">🍟 换个取餐号，下次试试${state.roleId === 'wanderer' ? '让 AI 替你上班，看看会发生什么' : '跟着门口那只猫，看看它每天都在忙什么'}。</div>
       <div class="end-actions"><button class="primary" id="rewind">回到上个岔路 ↶</button><button class="secondary" id="again">再取一个人生号</button><button class="secondary" id="share">复制事故报告</button></div>
       <p class="tiny">已收集 ${collection.length} / ${totalEndings} 种人生。回溯会恢复选择前的状态，已解锁记录保留。</p></div>
       <section class="ticket receipt"><div class="ticket-top"><span>LIFE INCIDENT REPORT</span><span>CASE ${String(Object.keys(G.endings).indexOf(e.key) + 1).padStart(2, '0')}</span></div>
