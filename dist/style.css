@@ -69,3 +69,6 @@
 @media(max-width:650px){.story-panel{scroll-margin-top:18px}.inventory{flex-direction:row;flex-wrap:wrap;gap:6px 12px}.inventory small{width:100%}.worldline{margin-top:12px;padding:10px 0}.quest-status{margin-top:12px}}
 
 @media(max-width:650px){.status-panel>.save-status{display:block;grid-column:1/-1;margin:10px 0 0}}
+
+/* Public release and local MCP calendar. */
+footer>a{display:block;margin-top:12px;color:var(--red);font-weight:600}.connect-page{max-width:720px;margin:40px auto;line-height:1.9}.connect-page h1{font-size:36px;margin:16px 0}.connect-page ol{padding:22px}.connect-page a,.calendar-card a{color:var(--red)}.connect-page input{display:block;width:100%;padding:14px;margin:10px 0 18px;border:1px solid var(--line);border-radius:6px;font:inherit}.connect-page #connection-status{margin:22px 0}.calendar-card{max-width:1160px;margin:20px auto 0;padding:18px;background:#f8e9bc;border:1px dashed #aa7e25;border-radius:8px;font-size:13px;line-height:1.8}.calendar-card summary{cursor:pointer;font-weight:600;color:var(--red)}.calendar-card pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:380px;overflow:auto;font:inherit}.calendar-card>div{margin-top:15px}@media(max-width:650px){.calendar-card{margin-inline:20px}.connect-page{margin-top:0}}

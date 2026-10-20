@@ -5,3 +5,8 @@ node_modules/
 !.env.example
 *.log
 artifacts/
+
+__pycache__/
+*.pyc
+.mcp.json
+mcp-config.local.json
