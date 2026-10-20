@@ -2,7 +2,9 @@
 
 ## 当前状态
 
-已实现本地桥接与 Agent Skill。**尚未完成真实账号联调，不宣称已成功调用官方 MCP，也尚未提交参赛报名。** 单元测试中的模拟响应只验证协议、错误处理和凭据保护，不作为真实接入证明。
+已实现本地桥接与 Agent Skill，并于 **2026-10-20 10:37:56（北京时间）成功调用官方 `campaign-calendar`**，返回 8,279 个字符的当月活动信息。真实结果保留在本机内存中，公开的[验证记录](docs/MCP_VERIFICATION.json)仅包含工具、来源、时间与字符数。
+
+单元测试中的模拟响应只验证协议、错误处理和凭据保护；上面的真实调用记录来自本人激活 Token 后的独立联调。正式报名状态见 README。
 
 公开 GitHub Pages 是可独立玩的离线版。MCP 现实支线运行在用户自己的电脑上，不需要将 Token 上传到 GitHub 或公共服务器。
 
@@ -42,4 +44,4 @@ Skill 查询当前活动，把真实活动和虚构结局分开，给用户一�
 - [官方 MCP 文档](https://github.com/M-China/mcd-mcp-server)
 - [官方比赛规则](https://github.com/M-China/mcd-developer-innovation-challenge/blob/main/activityGuidelines.md)
 - 本地运行 `python3 -m unittest discover -s tests -p 'test_*.py'` 验证协议与访问边界。
-- 真实联调完成后，记录脱敏工具调用结果和时间，再申请参赛；不要把仅有配置文件写成“已接入”。
+- 已完成真实联调；原始内容含当期活动标题、日期和说明，未将完整返回内容或凭据提交到公开仓库。
