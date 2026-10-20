@@ -1,6 +1,6 @@
 # 🍟 麦门人生模拟器
 
-## 本地新试玩：这班，猫不上
+## 这班，猫不上
 
 **好消息：这辈子不用打卡。坏消息：今天的饭还没着落。**
 
@@ -12,7 +12,9 @@
 - 三条生活方向与一个隐藏结果。结局可生成带实际猫状态和生活环境的 PNG 小票，由玩家自行保存和分享。
 - 自动存档、逐步回退；家当与熟人信息默认折叠。无需登录、付费或等待现实时间。
 
-**目前仅本地保存，尚未推送或上线。** 下方公开链接仍是此前的九回合版。本地运行后：`/` 是猫咪七天版，`/harbor.html` 是五回合码头样例，`/classic.html` 是九回合版。三者使用独立存档。
+**[▶ 直接养猫](https://zhouzixuan2333.github.io/maimen-life-simulator/) · [反馈 / 提交想法](https://github.com/zhouzixuan2333/maimen-life-simulator/issues) · 喜欢就点个 Star ☆**
+
+手机、电脑打开就能玩，无需登录、安装或 Token。也可以体验[五回合码头样例](https://zhouzixuan2333.github.io/maimen-life-simulator/harbor.html)和[九回合文字版](https://zhouzixuan2333.github.io/maimen-life-simulator/classic.html)，三者使用独立存档。
 
 [玩法与画面规则](docs/CAT_DESIGN.md)记录本轮确认后的具体范围。首版的现实能力仍是可选的本机官方活动日历查询，没有自动下单或现实聚餐规划。
 
@@ -24,7 +26,7 @@
 
 3.1 快玩版：点“取号”随机开启人生，小票展示真实身份与启动资金，直接进入第一个选择。也可以自己选角色。普通行动点一下就发生；剧情中花钱或交出道具时先看说明、再确认。完整剧情和说明可以回看，喜欢分镜阅读也能随时切换。手机首页只展示开场悬念，反转留到游戏中揭晓。
 
-**[▶ 直接开玩](https://zhouzixuan2333.github.io/maimen-life-simulator/) · [反馈剧情 / 提交想法](https://github.com/zhouzixuan2333/maimen-life-simulator/issues) · 喜欢就点个 Star ☆**
+**[▶ 玩九回合文字版](https://zhouzixuan2333.github.io/maimen-life-simulator/classic.html)**
 
 无需登录，无需安装，无需 Token。电脑、手机都可以玩。
 
