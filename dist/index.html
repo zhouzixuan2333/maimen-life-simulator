@@ -6,13 +6,22 @@
   <meta name="description" content="重生在麦当劳门口，这班，猫不上。养一只橘白猫，做十四次选择，看看它能混成什么样。七天养成小游戏，免费玩，无需登录。">
   <title>这班，猫不上 · 麦门人生</title>
   <link rel="preload" href="assets/cat-states.png" as="image">
-  <link rel="stylesheet" href="cat.css?v=1.0">
-  <script defer src="cat-story.js?v=1.0"></script><script defer src="cat-engine.js?v=1.0"></script><script defer src="cat-scene.js?v=1.0"></script><script defer src="cat-app.js?v=1.0"></script><script defer src="calendar.js?v=4.0"></script>
+  <link rel="stylesheet" href="cat.css?v=2.0">
+  <script defer src="cat-chapters.js?v=2.0"></script><script defer src="cat-story.js?v=2.0"></script><script defer src="cat-engine.js?v=2.0"></script><script defer src="cat-scene.js?v=2.0"></script><script defer src="cat-app.js?v=2.0"></script><script defer src="calendar.js?v=4.0"></script>
 </head>
 <body>
   <header class="topbar"><a class="brand" href="index.html" aria-label="返回麦门人生首页"><span>🍟</span>麦门人生</a><div class="header-right"><small>七天试玩 · 非官方</small><button id="motion-toggle" aria-pressed="true" title="开关小猫和场景动画">动画 开</button></div></header>
   <main id="app"></main>
-  <footer>非麦当劳官方产品。剧情与人物均为虚构；不会实际下单。猫粮归猫，薯条归人。进度只保存在当前浏览器。<br><a href="https://github.com/zhouzixuan2333/maimen-life-simulator" target="_blank" rel="noopener noreferrer">GitHub · 喜欢小橘？点个 Star ☆</a></footer>
+  <footer>非麦当劳官方产品。剧情与人物均为虚构；不会实际下单。猫粮归猫，薯条归人。进度只保存在当前浏览器。<br><a href="https://github.com/zhouzixuan2333/maimen-life-simulator" target="_blank" rel="noopener noreferrer">GitHub · 喜欢这只猫？点个 Star ☆</a></footer>
   <dialog id="share-dialog"><h2>小橘的生活小票</h2><p>长按图片或保存到设备，分享你养出来的猫。</p><img id="card-image" alt="我养的小橘和它七天后的生活小票"><a id="download-card" class="primary" download="小橘的七天.png">保存图片</a><button id="close-share" class="secondary">收好小票</button></dialog>
+  <dialog id="name-dialog" aria-labelledby="name-title">
+    <form id="name-form"><h2 id="name-title">这辈子做猫，想叫什么？</h2>
+      <p id="name-help">不改也可以，就叫小橘。以后还能改。</p>
+      <label for="name-input">名字</label><input id="name-input" name="name" maxlength="32" autocomplete="off" enterkeyhint="done" aria-describedby="name-error">
+      <p id="name-error" role="alert"></p>
+      <button class="primary" type="submit" id="name-confirm">就叫这个，出发</button>
+      <button class="secondary" type="button" id="name-cancel">再想想</button>
+    </form>
+  </dialog>
 </body>
 </html>

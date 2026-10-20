@@ -2,10 +2,32 @@
   'use strict';
   const story = typeof module !== 'undefined' && module.exports ? require('./cat-story.js') : root.CatStory;
   const moods = ['neutral', 'hungry', 'happy', 'proud', 'asleep', 'wet', 'annoyed', 'playful'];
-  function start(seed) {
+  const defaultNames = { cat: '小橘', clerk: '小麦', regular: '老周', cats: '狸花' };
+  function names(value = {}) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('名字格式无效');
+    const result = {};
+    for (const [key, fallback] of Object.entries(defaultNames)) {
+      if (value[key] !== undefined && typeof value[key] !== 'string') throw new Error('名字需要是文字');
+      const name = (value[key] ?? fallback).replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '').trim().replace(/\s+/g, ' ') || fallback;
+      if ([...name].length > 8) throw new Error('名字最多 8 个字');
+      result[key] = name;
+    }
+    return result;
+  }
+  function text(s, value) {
+    const n = s?.names || defaultNames;
+    const keys = { 小橘: 'cat', 小麦: 'clerk', 阿周: 'regular', 老周: 'regular', 狸花: 'cats' };
+    return String(value).replace(/小橘|小麦|阿周|老周|狸花/g, match => n[keys[match]]);
+  }
+  function rename(s, key, value) {
+    if (!Object.hasOwn(defaultNames, key)) throw new Error('不能修改这个名字');
+    return { ...s, names: names({ ...s.names, [key]: value }) };
+  }
+  function start(seed, version = 2, nameValues) {
     if (seed === undefined) seed = typeof crypto !== 'undefined' && crypto.getRandomValues ? crypto.getRandomValues(new Uint32Array(1))[0] : Math.floor(Math.random() * 4294967296);
     if (!Number.isInteger(seed) || seed < 0 || seed > 4294967295) throw new Error('出发编号无效');
-    return { seed, step: 0, fed: false, wet: false, mood: 'hungry', spot: 'door', home: 'street', items: [], bonds: { clerk: 0, regular: 0, cats: 0 }, routes: { social: 0, explorer: 0, crew: 0 }, flags: [], lastDay: 0, history: [] };
+    if (![1, 2].includes(version)) throw new Error('故事版本无效');
+    return { version, names: names(nameValues), seed, step: 0, fed: false, wet: false, mood: 'hungry', spot: 'door', home: 'street', items: [], bonds: { clerk: 0, regular: 0, cats: 0 }, routes: { social: 0, explorer: 0, crew: 0 }, flags: [], lastDay: 0, history: [] };
   }
   function eligible(s, rule) {
     if (!rule) return true;
@@ -35,6 +57,7 @@
       if (next.bonds[key] > s.bonds[key]) rewards.push({ type: 'bond', text: `${story.people[key].name} · ${relation(next.bonds[key])}` });
     }
     for (const [key, delta] of Object.entries(effect.routes || {})) next.routes[key] += delta;
+    if (effect.milestone) rewards.unshift({ type: 'life', text: effect.milestone });
     if (effect.fed && !(day === s.lastDay ? s.fed : s.items.includes('bowl'))) rewards.push({ type: 'food', text: '今天有饭了' });
     if (s.wet && !next.wet) rewards.push({ type: 'dry', text: '毛和垫子都干了' });
     if (!s.wet && next.wet) rewards.push({ type: 'wet', text: '毛淋湿了，下一步能弄干' });
@@ -46,15 +69,20 @@
     return next;
   }
   function relation(level) { return ['还不认识', '认识你了', '愿意等你', '会替你撑腰'][level]; }
-  function homeName(home) { return ({ street: '临时墙角', box: '纸箱办公室', shelter: '避雨的屋檐', chair: '门外专属座位' })[home]; }
+  function homeName(home) { return ({ street: '临时墙角', box: '纸箱办公室', shelter: '避雨的屋檐', chair: '门外专属座位', garden: '花架下的小窝' })[home]; }
   function view(s, feedback = false) {
     const sc = scene(s), newDay = sc && sc.day > s.lastDay;
     const fed = newDay ? s.items.includes('bowl') : s.fed;
     const mood = s.wet ? 'wet' : !feedback && newDay && !fed ? 'hungry' : s.mood;
-    return { mood, fed: feedback ? s.fed : fed, wet: s.wet, spot: feedback || !sc ? s.spot : sc.spot, weather: !feedback && sc && sc.weather || '', home: s.home, items: s.items, friends: s.bonds.cats >= 2, day: feedback || !sc ? s.lastDay : sc.day };
+    const life = s.flags.find(f => f.startsWith('ending:'))?.slice(7) || s.flags.find(f => f.startsWith('arc:'))?.slice(4);
+    return { mood, fed: feedback ? s.fed : fed, wet: s.wet, spot: feedback || !sc ? s.spot : sc.spot, weather: !feedback && sc && sc.weather || '', home: s.home, items: s.items, names: s.names, life, friends: s.bonds.cats >= 2, together: life === 'sweet' && s.flags.includes('sharedDinner'), day: feedback || !sc ? s.lastDay : sc.day };
   }
   function result(s) {
     if (s.step !== 14) throw new Error('七天还没过完');
+    if (s.version === 2) {
+      const e = story.ending(s);
+      return { ...e, memories: s.history.filter(h => e.steps.includes(h.day * 2 - (h.part === '白天' ? 2 : 1))).slice(-2).map(h => ({ label: h.label, reply: h.reply })) };
+    }
     const hidden = s.items.includes('bowl') && s.items.includes('sign') && s.bonds.clerk >= 2 && s.bonds.regular >= 2 && s.bonds.cats >= 2 && s.flags.includes('weathered');
     if (hidden) return { id: 'boss', title: '店长的猫？你是店长的店长。', lead: '你没上过一天班，但大家已经学会先问你的意见。', text: '小麦负责添饭，阿周负责陪玩，狸花负责带路。你负责偶尔睁眼。七天前的临时路过，如今已经成了这里最稳定的岗位。', next: '这次人和猫都被你混熟了。再来一局，试试完全靠自己找门路。' };
     // Ties follow the player's final leisure preference, then the stable route order.
@@ -67,16 +95,16 @@
       crew: { id: 'crew', title: '一只猫出门，一群猫下班。', lead: '你没建群，但朋友们都知道去哪里找你。', text: '饭可以一起吃，麻烦可以一起躲，瓶盖可以踢一下午。你混出来的排面，是一声招呼就有猫愿意跟上。', next: '下次也认识一下店员和熟客，看看人类能给猫的日子添点什么。' }
     })[route];
   }
-  function serialize(s) { return { version: 1, seed: s.seed, choices: s.history.map(h => h.id) }; }
+  function serialize(s) { return { version: s.version, seed: s.seed, names: { ...s.names }, choices: s.history.map(h => h.id) }; }
   function restore(data) {
-    if (!data || data.version !== 1 || !Number.isInteger(data.seed) || !Array.isArray(data.choices) || data.choices.length > 14 || data.choices.some(x => typeof x !== 'string')) throw new Error('存档无效');
-    return data.choices.reduce((s, id) => choose(s, id), start(data.seed));
+    if (!data || ![1, 2].includes(data.version) || !Number.isInteger(data.seed) || !Array.isArray(data.choices) || data.choices.length > 14 || data.choices.some(x => typeof x !== 'string')) throw new Error('存档无效');
+    return data.choices.reduce((s, id) => choose(s, id), start(data.seed, data.version, data.names));
   }
   function rewind(s) {
     if (!s.step) throw new Error('还没有可以回头的选择');
     return restore({ ...serialize(s), choices: s.history.slice(0, -1).map(h => h.id) });
   }
-  const api = { start, scene, choose, result, serialize, restore, rewind, view, relation, homeName, moods, story };
+  const api = { start, scene, choose, result, serialize, restore, rewind, view, relation, homeName, moods, story, names, defaultNames, text, rename };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.CatGame = api;
 })(typeof window !== 'undefined' ? window : globalThis);

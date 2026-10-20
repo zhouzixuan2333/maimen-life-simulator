@@ -1,5 +1,7 @@
 const assert = require('node:assert/strict');
-const G = require('../dist/cat-engine.js');
+const engine = require('../dist/cat-engine.js');
+// Keep the shipped v1 story and all existing saves replayable.
+const G = { ...engine, start: seed => engine.start(seed, 1) };
 let count = 0, transitions = 0, locked = 0;
 const endings = new Set(), coverage = new Set(), events = new Set();
 const play = (ids, seed = 0) => ids.reduce((s, id) => G.choose(s, id), G.start(seed));

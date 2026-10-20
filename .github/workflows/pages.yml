@@ -22,9 +22,11 @@ jobs:
           node --check dist/harbor-engine.js
           node --check dist/cat-app.js
           node --check dist/cat-scene.js
+          node --check dist/cat-chapters.js
           node --check dist/cat-story.js
           node --check dist/cat-engine.js
           node tests/cat.test.cjs
+          node tests/cat-v2.test.cjs
           node tests/harbor.test.cjs
           node tests/engine.test.cjs
       - name: Check local MCP bridge

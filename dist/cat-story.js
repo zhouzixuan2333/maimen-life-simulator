@@ -1,5 +1,6 @@
 (function (root) {
   'use strict';
+  const chapters = typeof module !== 'undefined' && module.exports ? require('./cat-chapters.js') : root.CatChapters;
   const option = (id, label, hint, reply, effect, gate) => ({ id, label, hint, reply, effect, gate });
   const item = (key, note) => ({ item: key, note });
   const bond = (key, min, note) => ({ bond: key, min, note });
@@ -25,7 +26,7 @@
       option('known', '去之前找到的屋檐下', '还记得那条小路，就不用淋雨。', '你熟门熟路地绕到屋檐下。没有人抱你，但也没有一滴雨碰到你。独立生活，验收通过。', { wet: false, spot: 'shelter', home: 'shelter', routes: { explorer: 2 }, mood: 'proud' }, flag('dryspot', '第 1、2 天探索过避雨处才能选')),
       option('dash', '顶着雨，先冲到最近的雨棚', '会淋湿一点，好在马上有地方躲。', '你冲进雨棚，瘦了一圈——只是毛贴住了。雨棚免费，尊严稍微收了一点手续费。', { wet: true, spot: 'shelter', home: 'shelter', routes: { explorer: 1 }, mood: 'wet' })
     ] };
-    if (id === 'absence') return { id, title: '等了半天，熟悉的人今天没来。', text: '也许是加班，也许是休息。今天的饭，得另想办法。', spot: 'door', options: [
+    if (id === 'absence') return { id, title: '等了半天，熟悉的人今天没来。', text: s.version === 2 && s.items.includes('bowl') ? '也许是加班，也许是休息。饭碗里已经有人添了粮，只是今天少了一张熟面孔。' : '也许是加班，也许是休息。今天的饭，得另想办法。', spot: 'door', options: [
       option('bowl', '看看自己的饭碗', '有固定饭碗，就不用一直等人。', '碗里已经留好了猫粮。你决定把“有人惦记”评为一种优秀的自动化。', { fed: true, mood: 'happy', routes: { social: 2 } }, item('bowl', '还没有专属饭碗')),
       option('friend', '跟狸花去它熟悉的喂食点', '认识它，才知道它愿意带路。', '狸花领你绕到街角。你们并排吃完，它没有收导游费，只抢了个靠前的位置。', { fed: true, mood: 'happy', bonds: { cats: 1 }, routes: { crew: 2 }, spot: 'street' }, bond('cats', 1, '需要先认识街角的狸花')),
       option('ask', '去找今天值班的店员', '主动打个招呼，重新混个脸熟。', '你坐在门外认真叫了两声。值班店员找来一点猫粮。你今天的工作量，到此结束。', { fed: true, bonds: { clerk: 1 }, routes: { social: 1 }, mood: 'happy' })
@@ -38,6 +39,10 @@
   }
   function node(s) {
     if (s.step >= 14) return null;
+    if (s.version === 2) {
+      const chapter = chapters.node(s);
+      if (chapter) return chapter;
+    }
     const nodes = [
       { title: '你醒了。今天不用打卡，但肚子要。', text: '麦当劳门外，店员正收拾纸袋，一个下班的人拎着包路过。你的肚子先替你打了招呼。', spot: 'door', options: [
         option('rub', '蹭一下店员的裤腿', '让他注意你，试着混口饭。', '小麦蹲下来：“哪来的小橘？”你没交简历，先领到了一小份猫粮。', { fed: true, mood: 'happy', bonds: { clerk: 1 }, routes: { social: 1 } }),
@@ -104,13 +109,24 @@
     ];
     if (s.step === 6 || s.step === 10) return incident(s, eventIds(s.seed)[s.step === 6 ? 0 : 1]);
     const current = nodes[s.step];
+    if (s.version === 2 && s.step === 4 && !s.bonds.clerk) {
+      current.title = '门口又忙起来了，你想先去找谁？';
+      current.text = '小麦正在整理东西，还没和你打过招呼。先找熟悉的人，或自己探索一条新路，都可以。';
+    }
+    if (s.version === 2 && s.step === 7 && !s.wet) {
+      current.options[0].hint = '舒服地歇一歇，下午还有自己的安排。';
+      current.options[0].reply = '你翻了个面，保证阳光照得均匀。毛本来就是干的，这次纯粹是享受生活。';
+      current.options[1].label = '找小麦讨一点吃的，再休息';
+      current.options[1].reply = '小麦添了点猫粮，把垫子拍松。你负责验收：先吃，再躺。';
+      current.options[2].reply = '狸花往旁边挪了一点。你们挤着睡了一觉。它那半边比较暖，你假装没发现。';
+    }
     if (s.step === 11 && s.wet) {
       current.text = '小麦拿来干毛巾：先擦干毛和垫子，再挑一个舒服的位置。以后，这里也有你的安排。';
       current.options = current.options.map(o => ({ ...o, hint: '先擦干毛。' + o.hint, reply: '你把毛和垫子弄干，重新蓬松起来。' + o.reply, effect: { ...o.effect, wet: false } }));
     }
     return { id: `day-${s.step}`, ...current };
   }
-  const api = { node, items, people, days, eventIds };
+  const api = { node, items, people, days, eventIds, ending: chapters.ending };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.CatStory = api;
 })(typeof window !== 'undefined' ? window : globalThis);

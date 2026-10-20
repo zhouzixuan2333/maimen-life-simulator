@@ -4,3 +4,8 @@
 @media(prefers-reduced-motion:reduce){body:not(.still) .cat-idle{animation-duration:7s}}
 
 @keyframes ripple{0%,100%{transform:translateX(-5px)}50%{transform:translateX(7px)}}
+
+/* Editable names are secondary to the story, with touch-sized controls. */
+.name-row{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:15px;align-items:center;font-size:10px;color:#8c806c}.name-row>span:first-child{flex-basis:100%}.name-edit{background:none;border:0;border-bottom:1px dashed #bda78a;padding:10px 3px;min-height:42px;color:#8b513d;font:inherit;overflow-wrap:anywhere;max-width:100%}.name-edit span{font-size:10px;color:#aa9274}.pocket .name-edit{font-size:12px}.story,.choice-top b,.ending h1,.feedback h1,.pocket p,.cat-caption,.results b{overflow-wrap:anywhere}#name-input{display:block;width:100%;margin:10px 0;padding:13px;border:1px solid #cbb799;border-radius:8px;font:inherit;font-size:18px;color:#514331;background:#fffaf1}#name-form label{font-size:12px;color:#8b7354}#name-error{color:#ac4032;min-height:20px}.name-row .name-edit:focus-visible{outline:2px solid #548a82;outline-offset:2px}
+
+.life-chips{flex-wrap:wrap}.bowl-name{flex-basis:100%;color:#a26049;font-size:11px;overflow-wrap:anywhere}

@@ -1,5 +1,14 @@
 # 🍟 麦门人生模拟器
 
+## 本地扩展版：八种猫生，自由取名
+
+本轮扩展**尚未发布**；下方公开试玩目前仍是四结局版。运行本地 `dist/` 可体验新版：
+
+- 开局给猫取名，默认小橘；人物默认小麦、老周、狸花，点名字可随时编辑。剧情、回忆、猫碗与分享小票统一使用新名字，存档和回退保留命名。
+- 第五天选择留在门口、探索街巷或跟猫朋友走，随后决定具体生活。八条生活线各有三段后续事件，包含两条隐藏生活；首页不揭晓反转。
+- 专属饭碗刻着猫的名字；秘密花园、两张椅子、邻居纸箱和营业海报随生活变化出现。最后也可以改主意，转去清静的花园或回店门口。
+- 旧版七天存档按原规则续玩，新开一局进入新版。名字只存当前浏览器，不发送到服务器。
+
 ## 这班，猫不上
 
 **好消息：这辈子不用打卡。坏消息：今天的饭还没着落。**
@@ -84,7 +93,8 @@ python3 scripts/mcd_bridge.py
 ## 开发与测试
 
 - `dist/index.html` / `cat-app.js` / `cat.css`：小橘七天版入口、界面与动画。
-- `dist/cat-story.js` / `cat-engine.js`：十四次行动、关系条件、物品、湿毛状态、存档与结局。
+- `dist/cat-chapters.js`：八条生活线、各自后续事件与结局。
+- `dist/cat-story.js` / `cat-engine.js`：十四次行动、关系条件、物品、湿毛状态、版本化存档与命名。
 - `dist/cat-scene.js` / `assets/cat-states.png`：八姿态透明猫图、分层场景与 PNG 小票。
 - `dist/harbor.html` / `harbor.js` / `harbor.css`：保留五回合码头样例。
 - `dist/harbor-engine.js`：时间、零钱、目标、随机路况与可重放存档。
@@ -98,6 +108,7 @@ python3 scripts/mcd_bridge.py
 
 ```sh
 node tests/cat.test.cjs
+node tests/cat-v2.test.cjs
 node tests/harbor.test.cjs
 node tests/engine.test.cjs
 python3 -m unittest discover -s tests -p 'test_*.py'
