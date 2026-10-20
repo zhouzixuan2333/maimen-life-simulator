@@ -90,3 +90,13 @@ git diff --check
 - 如需回退，先检查后续修改，仅恢复本轮涉及的文件；不要 `reset --hard` 或整目录覆盖。旧截图仍保留。
 
 下一阶段如接入真实 MCP，先核对门店菜单、价格和实时工具契约，再单独实现真实消费确认。当前不存储 token。
+
+## 2026-10-20 公开发布与报名
+
+- GitHub： https://github.com/zhouzixuan2333/maimen-life-simulator ，Public，远端正式入口 `main`；本地开发仍在 `codex/maimen-life-demo`。显式发布命令为 `git push origin HEAD:main`。
+- 在线试玩： https://zhouzixuan2333.github.io/maimen-life-simulator/ 。GitHub Actions 测试与 Pages 部署均已通过，浏览器确认可开局。
+- 发布代码：`9b7e230`；真实 MCP 联调记录：`9c0486b`；本人确认后加入官方原文声明：`f680b7e`。
+- 官方 `campaign-calendar` 于北京时间 10:37:56 查询成功，返回 8,279 字符；公开记录仅保留脱敏元数据，不含 Token 或活动全文。
+- 自动验证：原游戏 3,171 次完整路径通过；新增 8 项 MCP 协议、错误处理和本机访问检查通过。Skill frontmatter 验证通过。属于本地自查与 CI，不是独立 AI 审查。
+- 报名入口： https://github.com/M-China/mcd-developer-innovation-challenge/issues/908 。已提交，是否通过以官方回复为准。
+- 本地 MCP 桥接运行方式见 MCP_INTEGRATION.md。公开网页无需 Token；本机缓存随进程退出消失，不提供后台长期服务。

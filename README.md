@@ -57,7 +57,7 @@ python3 scripts/mcd_bridge.py
 
 打开 http://127.0.0.1:8766/connect ，按页面引导在本机输入官方 Token。只查询活动日历，Token 不保存、不上传到公开网站。公开在线版保持无需 Token 的完整游戏。
 
-**已完成官方 MCP 真实联调（2026-10-20）：活动日历查询成功。当前已公开试玩，正式报名材料正在确认。** 详情见 [MCP_INTEGRATION.md](MCP_INTEGRATION.md)。使用 Agent 客户端时，可安装 [maimen-life-simulator Skill](skills/maimen-life-simulator/SKILL.md)。
+**已完成官方 MCP 真实联调（2026-10-20）：活动日历查询成功。已提交[官方报名 #908](https://github.com/M-China/mcd-developer-innovation-challenge/issues/908)，当前等待官方确认；报名是否成功以该 Issue 的官方回复为准。** 详情见 [MCP_INTEGRATION.md](MCP_INTEGRATION.md)。使用 Agent 客户端时，可安装 [maimen-life-simulator Skill](skills/maimen-life-simulator/SKILL.md)。
 
 ## 开发与测试
 
