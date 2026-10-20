@@ -69,17 +69,17 @@
   function renderHome() {
     state = null; feedback = false; resetReading();
     app.innerHTML = `<section class="home-grid"><div class="hero-copy">
-      <div class="eyebrow"><span class="short-line"></span> ONE LUNCH. NINE WRONG TURNS.</div>
-      <h1>只想吃饭，<br>怎么<span class="underlined">人生变了？</span></h1>
-      <p class="intro">出门前是普通人，回家时成了宇宙客服。<br>你选的每一步，命运都会认真地理解错。</p>
+      <div class="eyebrow"><span class="short-line"></span> 麦当劳主题 · 分支剧情小游戏</div>
+      <h1>选个身份，<br>重开<span class="underlined">离谱人生。</span></h1>
+      <p class="intro">选身份、做选择、收集道具，玩出 ${totalEndings} 种结局。<br>从普通人开局，看看最后混成院士，还是猫的下属。</p>
       <div class="hero-art">${burger}<span class="art-star star-one">✦</span><span class="art-star star-two">?!</span>
         <div class="round-stamp">人生正在<br><b>逐渐失控</b></div><span class="art-caption">THIS WAS SUPPOSED TO BE A LUNCH BREAK.</span></div>
       <div class="game-facts"><span>🎲 3 次随机遭遇</span><span>▣ 道具解锁选项</span><span>⚑ ${totalEndings} 种人生</span></div>
       </div><section class="ticket select-ticket"><div class="ticket-top"><span>LONG PLAY / 长篇失控版</span><span>VER. 3.0</span></div>
-      <div class="ticket-body"><span class="eyebrow muted">STEP 01 · 选个倒霉蛋</span><h2>今天，从谁开始？</h2><p class="section-sub">请选择你希望被命运误会的身份。</p>
+      <div class="ticket-body"><span class="eyebrow muted">第一步 · 选择开局角色</span><h2>这次，你想当谁？</h2><p class="section-sub">不同身份，会遇到不同的故事和选择。</p>
       <div class="role-list">${G.roles.map(r => `<button class="role-card ${r.id === selected ? 'selected' : ''}" data-role="${r.id}" aria-pressed="${r.id === selected}">
         <span class="role-emoji">${r.icon}</span><span class="role-info"><small>${r.label} · 启动资金 ¥${r.cash}</small><strong>${r.name}</strong><span>${r.subtitle}</span></span><span class="role-radio" aria-hidden="true"></span></button>`).join('')}</div>
-      <button class="primary start-button" id="start">开始，后果自负！ <span>↗</span></button>
+      <button class="primary start-button" id="start">开始我的离谱人生 <span>↗</span></button>
       ${resumeRecord ? `<button class="secondary resume-button" id="resume">${resumeRecord.game.mealId ? '查看上次人生' : `继续上次冒险 · 已完成 ${resumeRecord.game.choices.length}/9 次选择`} →</button>` : ''}
       <p class="tiny center">每局 9 次选择 · 约 8 分钟 · 本机自动存档</p></div>
       <div class="ticket-bottom"><span>已发生的人生 <b>${collection.length} / ${totalEndings}</b></span><span>下一次能有多离谱？</span></div></section></section>${gallery()}`;
