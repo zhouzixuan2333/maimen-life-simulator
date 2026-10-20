@@ -8,6 +8,15 @@
   let collection = [];
   let resumeRecord = null, saveFailed = false;
   const sessionKey = 'maimen-session-v3';
+  let sceneFrame = 0, wholeScene = false;
+  function resetReading() { sceneFrame = 0; }
+  function paragraphs(text) {
+    // Sentence boundaries only change layout; every original character is retained.
+    const parts = typeof Intl.Segmenter === 'function'
+      ? Array.from(new Intl.Segmenter('zh', { granularity: 'sentence' }).segment(text), x => x.segment)
+      : [text];
+    return parts.map(x => `<p>${x}</p>`).join('');
+  }
   try {
     const saved = JSON.parse(localStorage.getItem(sessionKey) || 'null');
     if (saved) { const restored = G.restore(saved.game); resumeRecord = { game: G.serialize(restored), feedback: Boolean(saved.feedback) && restored.history.length > 0 }; }
@@ -24,6 +33,7 @@
   }
   function resumeGame() {
     if (!resumeRecord) return;
+    resetReading();
     state = G.restore(resumeRecord.game); selected = state.roleId; feedback = Boolean(resumeRecord.feedback);
     if (state.mealId) renderEnding();
     else if (state.endingId && !feedback) renderMeals();
@@ -44,8 +54,8 @@
   function focusHeading() {
     const h = app.querySelector('h1');
     if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
-    const storyPanel = state && window.matchMedia('(max-width: 650px)').matches ? app.querySelector('.story-panel') : null;
-    if (storyPanel) storyPanel.scrollIntoView({ block: 'start', behavior: 'instant' });
+    const playPanel = state ? app.querySelector('.play-layout') : null;
+    if (playPanel) playPanel.scrollIntoView({ block: 'start', behavior: 'instant' });
     else window.scrollTo({ top: 0, behavior: 'instant' });
   }
   function gallery() {
@@ -57,7 +67,7 @@
       }).join('')}</div></details>`;
   }
   function renderHome() {
-    state = null; feedback = false;
+    state = null; feedback = false; resetReading();
     app.innerHTML = `<section class="home-grid"><div class="hero-copy">
       <div class="eyebrow"><span class="short-line"></span> ONE LUNCH. NINE WRONG TURNS.</div>
       <h1>只想吃饭，<br>怎么<span class="underlined">人生变了？</span></h1>
@@ -82,7 +92,7 @@
   }
   function sidebar() {
     const role = G.roles.find(r => r.id === state.roleId), route = G.route(state);
-    return `<aside class="status-panel"><span class="eyebrow muted">IDENTITY MAY CHANGE</span>
+    return `<aside class="player-tools"><details class="status-drawer"><summary><span>${role.icon} <b>${state.identity}</b></span><span>¥${state.cash} · 背包 ${state.inventory.length} <span class="drawer-hint">查看 ▾</span></span></summary><div class="status-panel"><span class="eyebrow muted">IDENTITY MAY CHANGE</span>
       <div class="player"><span>${role.icon}</span><div><h2>${role.name}</h2><small>开局身份 · 仅供参考</small></div></div>
       <div class="wallet"><span>剩余现金</span><strong><small>¥</small>${state.cash}<small>.00</small></strong></div>
       <div class="stat"><div><span>🧠 理智</span><b>${state.energy} / 100</b></div><div class="meter"><i style="width:${state.energy}%"></i></div></div>
@@ -91,10 +101,9 @@
       ${state.inventory.length ? `<div class="inventory"><small>背包 · 选项会检查这些物品</small>${state.inventory.map(x => `<span>▣ ${x}</span>`).join('')}</div>` : ''}
       <div class="quest-status"><span class="${state.flags.includes('validated') ? 'done' : ''}">${state.flags.includes('validated') ? '✓' : '○'} 资格认证</span><span class="${state.flags.includes('resolved') ? 'done' : ''}">${state.flags.includes('resolved') ? '✓' : '○'} 身份危机已解决</span><span class="${state.credential && state.inventory.includes(state.credential) ? 'done' : ''}">${state.credential && state.inventory.includes(state.credential) ? '✓' : '○'} 持有原始凭证</span></div>
       <div class="mini-note"><span>✳ 命运备注</span><p>${route ? '随机事件每局固定。回溯不会重新抽签，换一个选择仍会改变物品和后续条件。' : role.intro}</p></div>
-      <div class="sidebar-actions">${state.history.length ? '<button class="text-button" id="back-choice">↶ 回到上个岔路</button>' : ''}<button class="text-button" id="restart">重选角色</button></div>
-      <p class="tiny save-status">${saveFailed ? '浏览器未允许存档，请勿关闭当前页面。' : '已在本机存档 · 刷新后可继续'}</p></aside>`;
+      </div></details><div class="sidebar-actions">${state.history.length ? '<button class="text-button" id="back-choice">↶ 回到上个岔路</button>' : ''}<button class="text-button" id="restart">重选角色</button><span class="tiny save-status">${saveFailed ? '未能存档，请勿关闭页面' : '已自动存档'}</span></div></aside>`;
   }
-  function goBack() { state = G.rewind(state); feedback = false; renderGame(); focusHeading(); }
+  function goBack() { state = G.rewind(state); feedback = false; resetReading(); renderGame(); focusHeading(); }
   function bindSidebar() {
     document.querySelector('#restart').onclick = () => {
       if (window.confirm('结束这一局，重新挑一个倒霉蛋？')) { discardProgress(); renderHome(); focusHeading(); }
@@ -107,6 +116,19 @@
       o.energy ? `理智 ${o.energy > 0 ? '+' : '−'}${Math.abs(o.energy)}` : null,
       o.mood ? `离谱值 ${o.mood > 0 ? '+' : '−'}${Math.abs(o.mood)}` : null].filter(Boolean).join(' · ');
   }
+  function sceneReading(current, route) {
+    const showChoices = wholeScene || sceneFrame === 1;
+    return `<div class="reading-toolbar"><span>${wholeScene ? '整幕阅读' : sceneFrame === 0 ? '① 发生了什么' : '② 轮到你了'}</span><button class="text-button" id="reading-mode">${wholeScene ? '切回分镜' : '整幕展开'}</button></div>
+      <h1>${current.title}</h1>
+      ${!showChoices || wholeScene ? `<div class="scene-card"><span class="scene-icon" aria-hidden="true">${current.random ? '🎲' : route?.icon || '🍟'}</span><div class="narration">${paragraphs(current.text)}</div></div>` : `<details class="scene-recap"><summary>回看刚才发生的事</summary><div class="narration">${paragraphs(current.text)}</div></details>`}
+      ${showChoices ? `<div class="dialogue-card"><span class="dialogue-label">${current.speaker}</span><div class="dialogue-message">${paragraphs(current.message)}</div></div>
+        <div class="choose-label">你打算怎么办？<span>点开看说明，再决定</span></div>
+        <div class="options">${current.options.map((o, i) => `<article class="choice-card ${o.disabledReason ? 'choice-locked' : ''}">
+          <button class="option" id="option-${i}" data-preview="${i}" aria-expanded="false" aria-controls="choice-detail-${i}"><span class="option-letter">${String.fromCharCode(65 + i)}</span><span><strong>${o.title}</strong>${o.disabledReason ? `<em class="lock-reason">🔒 ${o.disabledReason}</em>` : o.finish ? '<em>⚑ 决定最终人生</em>' : ''}</span><span class="option-arrow" aria-hidden="true">＋</span></button>
+          <div class="choice-detail" id="choice-detail-${i}" hidden><p>${o.desc}</p>${effect(o) ? `<div class="effect-chips">${effect(o).split(' · ').map(x => `<span>${x}</span>`).join('')}</div>` : ''}
+          ${o.disabledReason ? '<p class="unavailable-note">条件未满足，看看其他办法。</p>' : `<button class="primary choice-confirm" data-choice="${i}" aria-label="就这么办：${o.title}">就这么办 <span>→</span></button>`}</div>
+        </article>`).join('')}</div>` : '<button class="primary read-next" id="read-next">接着看 <span>→</span></button><p class="tiny reading-hint">按自己的节奏读，下一幕才需要做选择。</p>'}`;
+  }
   function renderGame() {
     saveProgress();
     const current = feedback ? null : G.scene(state);
@@ -114,23 +136,36 @@
     const labels = G.chapterLabels;
     const last = state.history.at(-1), route = G.route(state);
     app.innerHTML = `<section class="play-layout">${sidebar()}<section class="story-panel">
-      <nav class="progress" aria-label="剧情进度">${labels.map((label, i) => `<span class="${i < step ? 'active' : ''}"><i>${i + 1}</i><span>${label}</span></span>`).join('')}</nav>
-      <div class="story-content">${!feedback && current.random ? '<div class="random-banner">🎲 随机遭遇 · 本局回溯时保留同一事件</div>' : ''}<div class="eyebrow muted">CHAPTER 0${step} / 0${G.totalStages}<span class="chapter-line"></span>${route ? route.label : '命运尚未开机'}</div>
-      ${feedback ? `<div class="feedback-emoji">${state.endingId ? '⚑' : '?!'}</div><h1>${state.endingId ? '事情，彻底定性了。' : '事情开始不对劲了。'}</h1>
-        <p class="story-lead">${last.reply}</p>
+      <div class="chapter-header"><span>第 ${step} / ${G.totalStages} 章 · ${labels[step - 1]}</span><span>${route ? route.icon + ' ' + route.label : '命运尚未开机'}</span></div>
+      <details class="chapter-map"><summary><span class="chapter-track" aria-hidden="true">${labels.map((_, i) => `<i class="${i < step ? 'active' : ''}"></i>`).join('')}</span><span>章节地图</span></summary><nav class="progress" aria-label="剧情进度">${labels.map((label, i) => `<span class="${i < step ? 'active' : ''}" ${i === step - 1 ? 'aria-current="step"' : ''}><i>${i + 1}</i><span>${label}</span></span>`).join('')}</nav></details>
+      <div class="story-content">${!feedback && current.random ? '<div class="random-banner">🎲 随机遭遇 · 本局回溯时保留同一事件</div>' : ''}
+      ${feedback ? `<div class="feedback-heading"><span class="feedback-emoji">${state.endingId ? '⚑' : '?!'}</span><h1>${state.endingId ? '事情，彻底定性了。' : '事情开始不对劲了。'}</h1></div>
+        <div class="choice-memory">你刚刚：${last.choice}</div><div class="scene-card feedback-card"><div class="narration">${paragraphs(last.reply)}</div></div>
         ${last.identity ? `<div class="identity-change"><small>身份发生变化</small><strong>${last.identity}</strong></div>` : ''}
         ${last.gained.length || last.consumed.length || last.cash ? `<div class="item-changes">${last.gained.map(x => `<span>＋ 获得：${x}</span>`).join('')}${last.consumed.map(x => `<span class="spent">− 消耗 / 寄存：${x}</span>`).join('')}${last.cash ? `<span>现金 ${last.cash > 0 ? '+' : '−'}¥${Math.abs(last.cash)}</span>` : ''}</div>` : ''}
         ${state.step === 1 ? `<div class="identity-change"><small>已进入新世界线</small><strong>${route.icon} ${route.label}</strong><span>命运已经听见了。建议想好下一句再说。</span></div>` : ''}
-        <div class="choice-memory">全怪你选了：${last.choice}</div><button class="primary continue" id="next">${state.endingId ? '先吃一口，再看三年后' : '我倒要看看还能怎样'} <span>→</span></button>`
-        : `<h1>${current.title}</h1><p class="story-lead">${current.text}</p>
-        <div class="chat-bubble"><small>${current.speaker}</small><p>${current.message}</p></div>
-        <div class="choose-label">接下来的人生，取决于你这一次嘴硬。</div>
-        <div class="options">${current.options.map((o, i) => `<button class="option ${o.disabledReason ? 'option-locked' : ''}" data-choice="${i}" ${o.disabledReason ? 'disabled' : ''}><span class="option-letter">${String.fromCharCode(65 + i)}</span>
-          <span><strong>${o.title}</strong><small>${o.desc}</small><em class="${o.disabledReason ? 'lock-reason' : ''}">${o.disabledReason ? '🔒 ' + o.disabledReason : effect(o) + (o.finish ? ' · 决定最终人生' : '')}</em></span><span class="option-arrow">↗</span></button>`).join('')}</div>`}
+        <button class="primary continue" id="next">${state.endingId ? '先吃一口，再看三年后' : '我倒要看看还能怎样'} <span>→</span></button>`
+        : sceneReading(current, route)}
       </div></section></section>`;
     bindSidebar();
-    if (feedback) document.querySelector('#next').onclick = () => { feedback = false; state.endingId ? renderMeals() : renderGame(); focusHeading(); };
-    else app.querySelectorAll('[data-choice]').forEach(el => el.onclick = () => { state = G.choose(state, Number(el.dataset.choice)); feedback = true; renderGame(); focusHeading(); });
+    if (feedback) document.querySelector('#next').onclick = () => { feedback = false; resetReading(); state.endingId ? renderMeals() : renderGame(); focusHeading(); };
+    else {
+      document.querySelector('#reading-mode').onclick = () => {
+        wholeScene = !wholeScene; renderGame(); document.querySelector('#reading-mode').focus({ preventScroll: true });
+      };
+      const readNext = document.querySelector('#read-next');
+      if (readNext) readNext.onclick = () => { sceneFrame = 1; renderGame(); focusHeading(); };
+      app.querySelectorAll('[data-preview]').forEach(el => el.onclick = () => {
+        const expand = el.getAttribute('aria-expanded') !== 'true';
+        app.querySelectorAll('[data-preview]').forEach(button => {
+          const open = button === el && expand;
+          button.setAttribute('aria-expanded', String(open));
+          button.querySelector('.option-arrow').textContent = open ? '−' : '＋';
+          document.getElementById(button.getAttribute('aria-controls')).hidden = !open;
+        });
+      });
+      app.querySelectorAll('[data-choice]').forEach(el => el.onclick = () => { state = G.choose(state, Number(el.dataset.choice)); feedback = true; resetReading(); renderGame(); focusHeading(); });
+    }
   }
   function renderMeals() {
     saveProgress();
@@ -156,7 +191,7 @@
     app.innerHTML = `<section class="ending-layout"><div class="ending-copy">
       <div class="eyebrow"><span class="short-line"></span> THREE YEARS LATER / 三年后</div><div class="ending-icon">${e.icon}</div>
       <span class="ending-tag">${e.routeLabel} · 第 ${Object.keys(G.endings).indexOf(e.key) + 1} 号人生</span><h1>${e.title}</h1>
-      <p class="ending-quote">“${e.quote}”</p><p class="intro future-story">${e.description}</p>${e.consequences.length ? `<div class="consequences"><small>你前面的选择，还在影响你</small>${e.consequences.map(x => `<p>${x}</p>`).join('')}</div>` : ''}
+      <p class="ending-quote">“${e.quote}”</p><div class="intro future-story">${paragraphs(e.description)}</div>${e.consequences.length ? `<details class="consequences"><summary>前面的选择，留下了 ${e.consequences.length} 个后果</summary>${e.consequences.map(x => `<p>${x}</p>`).join('')}</details>` : ''}
       <div class="meal-epilogue"><small>而这一切，始于那顿午饭</small><p>${e.mealEpilogue}</p></div>
       <div class="end-stats"><div><strong>${state.energy}</strong><span>残存理智</span></div><div><strong>${state.mood}</strong><span>离谱指数</span></div><div><strong>¥${state.cash}</strong><span>当日余额</span></div></div>
       <div class="end-actions"><button class="primary" id="rewind">回到上个岔路 ↶</button><button class="secondary" id="again">换个人生开局</button><button class="secondary" id="share">复制事故报告</button></div>
